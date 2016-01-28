@@ -35,6 +35,24 @@ class VhostManagerTest extends AbstractManagerTest
         $this->assertTrue($this->vhostManager->exists($this->configuration->reveal()));
     }
 
+
+    public function test_define_willFail()
+    {
+        $this->setExpectedException('Guzzle\Http\Exception\ClientErrorResponseException');
+
+        $response = $this->prophesize('Guzzle\Http\Message\Response');
+        $response->getStatusCode()->willReturn(405);
+
+        $exception = $this->prophesize('Guzzle\Http\Exception\ClientErrorResponseException');
+        $exception->getResponse()->willReturn($response->reveal());
+
+        $this->vhosts->get('vhost')->willThrow($exception->reveal());
+
+        $this->vhosts->create('vhost')->shouldNotBeCalled();
+
+        $this->vhostManager->define($this->configuration->reveal());
+    }
+
     public function test_define_create()
     {
         $exception = $this->get404Exception();
