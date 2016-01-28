@@ -1,6 +1,6 @@
 {
     "name": "olaurendeau/rabbit-mq-admin-toolkit-bundle",
-    "description": "Automate rabbitmq configuration creation / update",
+    "description": "Automate rabbitmq vhost's configuration creation / update",
     "type": "symfony-bundle",
     "require": {
         "symfony/config": "~2.1",
