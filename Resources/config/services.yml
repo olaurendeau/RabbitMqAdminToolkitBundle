@@ -1,0 +1,25 @@
+services:
+    ola_rabbit_mq_admin_toolkit.handler.vhost:
+        class: Ola\RabbitMqAdminToolkitBundle\VhostHandler
+        arguments:
+            - @ola_rabbit_mq_admin_toolkit.manager.vhost
+            - @ola_rabbit_mq_admin_toolkit.manager.permission
+            - @ola_rabbit_mq_admin_toolkit.manager.exchange
+            - @ola_rabbit_mq_admin_toolkit.manager.queue
+
+    ola_rabbit_mq_admin_toolkit.manager.vhost:
+        class: Ola\RabbitMqAdminToolkitBundle\Manager\VhostManager
+
+    ola_rabbit_mq_admin_toolkit.manager.permission:
+        class: Ola\RabbitMqAdminToolkitBundle\Manager\PermissionManager
+
+    ola_rabbit_mq_admin_toolkit.manager.exchange:
+        class: Ola\RabbitMqAdminToolkitBundle\Manager\ExchangeManager
+
+    ola_rabbit_mq_admin_toolkit.manager.queue:
+        class: Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager
+        arguments:
+            - @ola_rabbit_mq_admin_toolkit.manager.binding
+
+    ola_rabbit_mq_admin_toolkit.manager.binding:
+        class: Ola\RabbitMqAdminToolkitBundle\Manager\BindingManager
