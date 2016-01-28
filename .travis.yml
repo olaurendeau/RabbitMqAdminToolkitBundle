@@ -6,8 +6,7 @@ php:
   - 5.3
 before_script:
   - composer install
-  - ls vendor/matthiasnoback/symfony-dependency-injection-test/PhpUnit/AbstractExtensionTestCase.php
-script: bin/phpunit Tests
+script: bin/phpunit  --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
      - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
