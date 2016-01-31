@@ -1,4 +1,4 @@
-# rabbit-mq-admin-toolkit-bundle
+# RabbitMqAdminToolkitBundle
 
 [![Build Status](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle.svg?branch=master)](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master)
 
