@@ -22,5 +22,8 @@
     "autoload": {
         "psr-0": { "Ola\\RabbitMqAdminToolkitBundle": "" }
     },
-    "target-dir": "Ola/RabbitMqAdminToolkitBundle"
+    "target-dir": "Ola/RabbitMqAdminToolkitBundle",
+    "config": {
+            "bin-dir": "bin"
+    }
 }
