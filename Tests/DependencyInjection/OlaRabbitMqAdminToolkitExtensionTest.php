@@ -18,59 +18,59 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
     {
         $this->load(array(
             'delete_allowed' => true,
-            'connections' => array (
+            'connections' => array(
                 'default' => 'http://user:password@localhost:15672',
             ),
             'vhosts' => array(
-                'test' => array (
+                'test' => array(
                     'name' => '/test',
                     'connection' => 'default',
-                    'permissions' => array (
+                    'permissions' => array(
                         'lafourchette' => NULL,
                     ),
-                    'exchanges' => array (
+                    'exchanges' => array(
                         'lf.exchange.a' => NULL,
-                        'lf.exchange.b' => array (
+                        'lf.exchange.b' => array(
                             'type' => 'direct',
                         ),
                         'lf.exchange.c' => NULL,
                     ),
-                    'queues' => array (
-                        'lf.queue.a' => array (
-                            'bindings' => array (
-                                array (
+                    'queues' => array(
+                        'lf.queue.a' => array(
+                            'bindings' => array(
+                                array(
                                     'exchange' => 'lf.exchange.a',
                                     'routing_key' => 'a.#',
                                 ),
-                                array (
+                                array(
                                     'exchange' => 'lf.exchange.b',
                                     'routing_key' => 'b.#',
                                 ),
                             ),
                         ),
-                        'lf.queue.b' => array (
-                            'bindings' => array (
-                                array (
+                        'lf.queue.b' => array(
+                            'bindings' => array(
+                                array(
                                     'exchange' => 'lf.exchange.a',
                                     'routing_key' => 'a.#',
                                 ),
-                                array (
+                                array(
                                     'exchange' => 'lf.exchange.b',
                                     'routing_key' => 'b.#',
                                 ),
-                                array (
+                                array(
                                     'exchange' => 'lf.exchange.c',
                                     'routing_key' => 'c.#',
                                 ),
                             ),
                         ),
-                        'lf.queue.c' => array (
-                            'bindings' => array (
-                                array (
+                        'lf.queue.c' => array(
+                            'bindings' => array(
+                                array(
                                     'exchange' => 'lf.exchange.a',
                                     'routing_key' => 'a.#',
                                 ),
-                                array (
+                                array(
                                     'exchange' => 'lf.exchange.c',
                                     'routing_key' => 'c.#',
                                 ),
