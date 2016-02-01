@@ -23,7 +23,9 @@
         <service id="ola_rabbit_mq_admin_toolkit.manager.vhost" class="%ola_rabbit_mq_admin_toolkit.manager.vhost.class%"/>
         <service id="ola_rabbit_mq_admin_toolkit.manager.permission" class="%ola_rabbit_mq_admin_toolkit.manager.permission.class%"/>
         <service id="ola_rabbit_mq_admin_toolkit.manager.exchange" class="%ola_rabbit_mq_admin_toolkit.manager.exchange.class%"/>
-        <service id="ola_rabbit_mq_admin_toolkit.manager.queue" class="%ola_rabbit_mq_admin_toolkit.manager.queue.class%"/>
+        <service id="ola_rabbit_mq_admin_toolkit.manager.queue" class="%ola_rabbit_mq_admin_toolkit.manager.queue.class%">
+            <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.binding"/>
+        </service>
         <service id="ola_rabbit_mq_admin_toolkit.manager.binding" class="%ola_rabbit_mq_admin_toolkit.manager.binding.class%"/>
     </services>
 </container>
