@@ -1,0 +1,29 @@
+<!-- src/Acme/HelloBundle/Resources/config/services.xml -->
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="ola_rabbit_mq_admin_toolkit.handler.vhost.class">Ola\RabbitMqAdminToolkitBundle\VhostHandler</parameter>
+        <parameter key="ola_rabbit_mq_admin_toolkit.manager.vhost.class">Ola\RabbitMqAdminToolkitBundle\Manager\VhostManager</parameter>
+        <parameter key="ola_rabbit_mq_admin_toolkit.manager.permission.class">Ola\RabbitMqAdminToolkitBundle\Manager\PermissionManager</parameter>
+        <parameter key="ola_rabbit_mq_admin_toolkit.manager.exchange.class">Ola\RabbitMqAdminToolkitBundle\Manager\ExchangeManager</parameter>
+        <parameter key="ola_rabbit_mq_admin_toolkit.manager.queue.class">Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager</parameter>
+        <parameter key="ola_rabbit_mq_admin_toolkit.manager.binding.class">Ola\RabbitMqAdminToolkitBundle\Manager\BindingManager</parameter>
+    </parameters>
+
+    <services>
+        <service id="ola_rabbit_mq_admin_toolkit.handler.vhost" class="%ola_rabbit_mq_admin_toolkit.handler.vhost.class%">
+            <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.vhost"/>
+            <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.permission"/>
+            <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.exchange"/>
+            <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.queue"/>
+        </service>
+
+        <service id="ola_rabbit_mq_admin_toolkit.manager.vhost" class="%ola_rabbit_mq_admin_toolkit.manager.vhost.class%"/>
+        <service id="ola_rabbit_mq_admin_toolkit.manager.permission" class="%ola_rabbit_mq_admin_toolkit.manager.permission.class%"/>
+        <service id="ola_rabbit_mq_admin_toolkit.manager.exchange" class="%ola_rabbit_mq_admin_toolkit.manager.exchange.class%"/>
+        <service id="ola_rabbit_mq_admin_toolkit.manager.queue" class="%ola_rabbit_mq_admin_toolkit.manager.queue.class%"/>
+        <service id="ola_rabbit_mq_admin_toolkit.manager.binding" class="%ola_rabbit_mq_admin_toolkit.manager.binding.class%"/>
+    </services>
+</container>
