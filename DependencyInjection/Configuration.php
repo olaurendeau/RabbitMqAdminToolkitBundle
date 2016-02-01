@@ -21,6 +21,7 @@ class Configuration implements ConfigurationInterface
             ->children()
                 ->scalarNode('default_vhost')->defaultValue('default')->end()
                 ->scalarNode('delete_allowed')->defaultFalse()->end()
+                ->scalarNode('silent_failure')->defaultFalse()->end()
                 ->arrayNode('connections')
                     ->prototype('scalar')
                     ->end()

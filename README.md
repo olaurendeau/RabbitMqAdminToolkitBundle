@@ -66,6 +66,7 @@ See `app/console config:dump-reference OlaRabbitMqAdminToolkitBundle` for full c
 ola_rabbit_mq_admin_toolkit:
     delete_allowed: true # Allow deletion of exchange, queues and binding for updating configuration. Shouldn't be enabled in production
     default_vhost: test # default is "default"
+    silent_failure: true # Catch all exceptions in commands. Could be use in test environment if no rabbitmq available
     connections:
         default: http://user:password@localhost:15672
         vm: http://user:password@192.168.1.1:15672
