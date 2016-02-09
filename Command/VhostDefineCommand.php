@@ -3,20 +3,17 @@
 namespace Ola\RabbitMqAdminToolkitBundle\Command;
 
 use Ola\RabbitMqAdminToolkitBundle\DependencyInjection\OlaRabbitMqAdminToolkitExtension;
-use Symfony\Component\Console\Command\Command;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class VhostDefineCommand extends Command implements ContainerAwareInterface
+class VhostDefineCommand extends ContainerAwareCommand
 {
     /**
-     * @var ContainerInterface
+     * {@inheritDoc}
      */
-    private $container;
-
     protected function configure()
     {
         parent::configure();
@@ -26,12 +23,16 @@ class VhostDefineCommand extends Command implements ContainerAwareInterface
             ->addArgument('vhost', InputArgument::OPTIONAL, 'Which vhost should be configured ?')
         ;
     }
+
+    /**
+     * {@inheritDoc}
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
             $vhost = $input->getArgument('vhost');
             if (empty($vhost)) {
-                $vhost = $this->container->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
+                $vhost = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
             }
 
             $serviceName = sprintf(
@@ -41,7 +42,7 @@ class VhostDefineCommand extends Command implements ContainerAwareInterface
 
             $output->write(sprintf('Looking for service [<info>%s</info>]...', $serviceName));
 
-            if (!$this->container->has($serviceName)) {
+            if (!$this->getContainer()->has($serviceName)) {
                 throw new \InvalidArgumentException(sprintf(
                     'No service found for vhost : "%s"',
                     $vhost
@@ -49,8 +50,8 @@ class VhostDefineCommand extends Command implements ContainerAwareInterface
             }
             $output->writeln(' service found !');
 
-            $vhostConfiguration = $this->container->get($serviceName);
-            $vhostHandler = $this->container->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
+            $vhostConfiguration = $this->getContainer()->get($serviceName);
+            $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
             $creation = !$vhostHandler->exists($vhostConfiguration);
             $output->write(sprintf('%s vhost configuration...', $creation ? 'Creating' : 'Updating'));
 
@@ -58,17 +59,9 @@ class VhostDefineCommand extends Command implements ContainerAwareInterface
 
             $output->writeln(sprintf(' %s !', $creation ? 'created' : 'updated'));
         } catch (\Exception $e) {
-            if (!$this->container->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
+            if (!$this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
                 throw $e;
             }
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
     }
 }

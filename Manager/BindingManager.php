@@ -35,5 +35,4 @@ class BindingManager extends AbstractManager
             }
         }
     }
-
 }

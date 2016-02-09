@@ -45,12 +45,12 @@ ola_rabbit_mq_admin_toolkit:
             permissions:
                 user: ~
             exchanges:
-                lf.exchange.a: ~
+                exchange.a: ~
             queues:
-                lf.queue.a:
+                queue.a:
                     bindings:
-                        - { exchange: lf.exchange.a, routing_key: "a.#" }
-                        - { exchange: lf.exchange.a, routing_key: "b.#" }
+                        - { exchange: exchange.a, routing_key: "a.#" }
+                        - { exchange: exchange.a, routing_key: "b.#" }
 ```
 
 ## Usage
@@ -77,25 +77,25 @@ ola_rabbit_mq_admin_toolkit:
             permissions:
                 user: ~
             exchanges:
-                lf.exchange.a:
+                exchange.a:
                     durable: false # default is "true"
-                lf.exchange.b:
+                exchange.b:
                     type: direct # default is "topic"
-                lf.exchange.c: ~
+                exchange.c: ~
             queues:
-                lf.queue.a:
+                queue.a:
                     durable: false # default is "true"
                     bindings:
-                        - { exchange: lf.exchange.a, routing_key: "a.#" }
-                        - { exchange: lf.exchange.b, routing_key: "b.#" }
-                lf.queue.b:
+                        - { exchange: exchange.a, routing_key: "a.#" }
+                        - { exchange: exchange.b, routing_key: "b.#" }
+                queue.b:
                     bindings:
-                        - { exchange: lf.exchange.a, routing_key: "a.#" }
-                        - { exchange: lf.exchange.b, routing_key: "b.#" }
-                        - { exchange: lf.exchange.c, routing_key: "c.#" }
-                lf.queue.c:
+                        - { exchange: exchange.a, routing_key: "a.#" }
+                        - { exchange: exchange.b, routing_key: "b.#" }
+                        - { exchange: exchange.c, routing_key: "c.#" }
+                queue.c:
                     bindings:
-                        - { exchange: lf.exchange.a, routing_key: "a.#" }
-                        - { exchange: lf.exchange.c, routing_key: "c.#" }
+                        - { exchange: exchange.a, routing_key: "a.#" }
+                        - { exchange: exchange.c, routing_key: "c.#" }
 
 ```

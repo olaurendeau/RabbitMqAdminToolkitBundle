@@ -25,8 +25,8 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_create()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('bindings' => array('foo-bind')),
-            'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'))
+            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 
         $exception = $this->get404Exception();
@@ -42,11 +42,34 @@ class QueueManagerTest extends AbstractManagerTest
         $this->queueManager->define($this->configuration->reveal());
     }
 
+    public function test_define_createSharded()
+    {
+        $this->configuration->getConfiguration('queues')->willReturn(array(
+            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'bar' => array('name' => 'doe.{modulus}', 'bindings' => array('routing_key' => 'routing.{modulus}'), 'modulus' => 2)
+        ));
+
+        $exception = $this->get404Exception();
+        $this->queues->get('vhost', 'foo')->willThrow($exception->reveal());
+        $this->queues->get('vhost', 'doe.0')->willThrow($exception->reveal());
+        $this->queues->get('vhost', 'doe.1')->willThrow($exception->reveal());
+
+        $this->queues->create('vhost', 'foo', array())->shouldBeCalled();
+        $this->queues->create('vhost', 'doe.0', array())->shouldBeCalled();
+        $this->queues->create('vhost', 'doe.1', array())->shouldBeCalled();
+
+        $this->bindingManager->define($this->configuration, 'foo', array('foo-bind'));
+        $this->bindingManager->define($this->configuration, 'doe.0', array('routing_key' => 'routing.0'));
+        $this->bindingManager->define($this->configuration, 'doe.1', array('routing_key' => 'routing.1'));
+
+        $this->queueManager->define($this->configuration->reveal());
+    }
+
     public function test_define_exist()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('bindings' => array('foo-bind')),
-            'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'))
+            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 
         $this->queues->get('vhost', 'foo')->willReturn(array());
@@ -64,8 +87,8 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_update()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('durable' => true, 'bindings' => array('foo-bind')),
-            'bar' => array('name' => 'doe', 'durable' => true, 'bindings' => array('doe-bind'))
+            'foo' => array('durable' => true, 'bindings' => array('foo-bind'), 'modulus' => null),
+            'bar' => array('name' => 'doe', 'durable' => true, 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 
         $this->configuration->isDeleteAllowed()->willReturn(true);

@@ -2,6 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\DependencyInjection;
 
+use Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -15,6 +16,32 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('ola_rabbit_mq_admin_toolkit');
 
+        $modulusValidation = function($v) {
+            foreach ($v as $name => $queue) {
+                if (isset($queue['modulus']) && is_int($queue['modulus'])) {
+                    if (strpos($name, QueueManager::MODULUS_PLACEHOLDER) === false) {
+                        if (isset($queue['name'])) {
+                            if (strpos($queue['name'], QueueManager::MODULUS_PLACEHOLDER) === false) {
+                                return true;
+                            }
+                        } else {
+                            return true;
+                        }
+                    }
+
+                    $hasModulus = false;
+                    foreach ($queue['bindings'] as $binding) {
+                        if (strpos($binding['routing_key'], QueueManager::MODULUS_PLACEHOLDER) !== false) {
+                            $hasModulus = true;
+                        }
+                    }
+
+                    if (!$hasModulus) {
+                        return true;
+                    }
+                }
+            }
+        };
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -51,10 +78,17 @@ class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                             ->arrayNode('queues')
+                                ->validate()
+                                    ->ifTrue($modulusValidation)
+                                    ->thenInvalid('If queue.modulus is defined queue.name & at least one associated routing_key should contain a {modulus} part')
+                                ->end()
                                 ->prototype('array')
                                     ->children()
                                         ->scalarNode('name')->end()
                                         ->scalarNode('durable')->defaultTrue()->end()
+                                        ->scalarNode('modulus')
+                                            ->defaultNull()
+                                        ->end()
                                         ->arrayNode('bindings')
                                             ->prototype('array')
                                                 ->children()
