@@ -46,7 +46,7 @@ class QueueManagerTest extends AbstractManagerTest
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
             'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
-            'bar' => array('name' => 'doe.{modulus}', 'bindings' => array('routing_key' => 'routing.{modulus}'), 'modulus' => 2)
+            'bar' => array('name' => 'doe.{modulus}', 'bindings' => array(array('routing_key' => 'routing.{modulus}')), 'modulus' => 2)
         ));
 
         $exception = $this->get404Exception();
