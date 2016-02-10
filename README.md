@@ -99,3 +99,29 @@ ola_rabbit_mq_admin_toolkit:
                         - { exchange: exchange.c, routing_key: "c.#" }
 
 ```
+
+## Sharding queues
+
+Sharding queues can be usefull for processing huge amount of messages.
+
+```yml
+# app/config/config.yml
+ola_rabbit_mq_admin_toolkit:
+    delete_allowed: true # Allow deletion of exchange, queues and binding for updating configuration. Shouldn't be enabled in production
+    connections:
+        default: http://user:password@localhost:15672
+    vhosts:
+        default:
+            name: /my_vhost
+            permissions:
+                user: ~
+            exchanges:
+                exchange.a: ~
+            queues:
+                queue.a.sharded:
+                    name: "queue.a.{modulus}"
+                    modulus: 5
+                    bindings:
+                        - { exchange: exchange.a, routing_key: "a.{modulus}.#" }
+                        - { exchange: exchange.a, routing_key: "b.#" }
+```
