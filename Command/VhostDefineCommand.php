@@ -71,6 +71,6 @@ class VhostDefineCommand extends ContainerAwareCommand
         }
         $output->writeln(' service found !');
 
-        $this->getContainer()->get($serviceName);
+        return $this->getContainer()->get($serviceName);
     }
 }

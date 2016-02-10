@@ -27,9 +27,9 @@ class QueueManager extends AbstractManager
      */
     public function define(VhostConfiguration $configuration)
     {
-        foreach ($configuration->getConfiguration('queues') as $name => $queue) {
+        foreach ($configuration->getConfiguration('queues') as $queue) {
 
-            $name = isset($queue['name']) ? $queue['name'] : $name;
+            $name = $queue['name'];
             unset($queue['name']);
 
             $bindings = $queue['bindings'];

@@ -36,11 +36,13 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
                         'exchange.c' => NULL,
                     ),
                     'queues' => array(
-                        'queue.a' => array(
+                        'queue.a.sharded' => array(
+                            'name' => 'queue.a.{modulus}',
+                            'modulus' => 10,
                             'bindings' => array(
                                 array(
                                     'exchange' => 'exchange.a',
-                                    'routing_key' => 'a.#',
+                                    'routing_key' => 'a.{modulus}.#',
                                 ),
                                 array(
                                     'exchange' => 'exchange.b',
@@ -48,7 +50,7 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
                                 ),
                             ),
                         ),
-                        'queue.b' => array(
+                        'queue.b.{modulus}' => array(
                             'bindings' => array(
                                 array(
                                     'exchange' => 'exchange.a',
@@ -56,7 +58,7 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
                                 ),
                                 array(
                                     'exchange' => 'exchange.b',
-                                    'routing_key' => 'b.#',
+                                    'routing_key' => 'b.{modulus}.#',
                                 ),
                                 array(
                                     'exchange' => 'exchange.c',

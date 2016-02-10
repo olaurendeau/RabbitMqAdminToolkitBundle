@@ -69,6 +69,8 @@ class Configuration implements ConfigurationInterface
     {
         $node = new ArrayNodeDefinition('exchanges');
 
+        $this->appendNameNormalization($node);
+
         return $node
             ->prototype('array')
                 ->children()
@@ -84,21 +86,24 @@ class Configuration implements ConfigurationInterface
      */
     private function getQueuesConfiguration()
     {
-        $modulusValidation = function($v) {
+        $modulusValidation = function($queues) {
 
             $hasModulus = function($string) {
                 return strpos($string, QueueManager::MODULUS_PLACEHOLDER) !== false;
             };
 
-            foreach ($v as $name => $queue) {
+            foreach ($queues as $name => $queue) {
                 if (isset($queue['modulus']) && is_int($queue['modulus'])) {
-                    if (!$hasModulus($name) || (!$hasModulus($name) && isset($queue['name']) && !$hasModulus($queue['name']))) {
+
+                    if (!$hasModulus($queue['name'])) {
                         return true;
                     }
 
                     $bindingsHaveModulus = false;
                     foreach ($queue['bindings'] as $binding) {
-                        $bindingsHaveModulus = $hasModulus($binding['routing_key']);
+                        if ($hasModulus($binding['routing_key'])) {
+                            $bindingsHaveModulus = true;
+                        }
                     }
 
                     if (!$bindingsHaveModulus) {
@@ -109,6 +114,8 @@ class Configuration implements ConfigurationInterface
         };
 
         $node = new ArrayNodeDefinition('queues');
+
+        $this->appendNameNormalization($node);
 
         return $node
             ->validate()
@@ -130,5 +137,33 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
             ->end();
+    }
+
+    /**
+     * @param NodeDefinition $node
+     *
+     * @return NodeDefinition
+     */
+    private function appendNameNormalization(NodeDefinition $node)
+    {
+        return $node->beforeNormalization()
+            ->ifTrue(function($array) {
+                foreach ($array as $item) {
+                    if (!isset($item['name'])) {
+                        return true;
+                    }
+                }
+            })
+            ->then(function($array) {
+                foreach ($array as $name => $item) {
+                    if (!isset($item['name'])) {
+                        $array[$name]['name'] = $name;
+                    }
+                }
+
+                return $array;
+            })
+            ->end();
+
     }
 }

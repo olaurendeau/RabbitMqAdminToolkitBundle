@@ -23,7 +23,7 @@ class ExchangeManagerTest extends AbstractManagerTest
     public function test_define_create()
     {
         $this->configuration->getConfiguration('exchanges')->willReturn(array(
-            'foo' => array(),
+            'foo' => array('name' => 'foo'),
             'bar' => array('name' => 'doe')
         ));
 
@@ -40,7 +40,7 @@ class ExchangeManagerTest extends AbstractManagerTest
     public function test_define_exist()
     {
         $this->configuration->getConfiguration('exchanges')->willReturn(array(
-            'foo' => array(),
+            'foo' => array('name' => 'foo'),
             'bar' => array('name' => 'doe')
         ));
 
@@ -56,7 +56,7 @@ class ExchangeManagerTest extends AbstractManagerTest
     public function test_define_update()
     {
         $this->configuration->getConfiguration('exchanges')->willReturn(array(
-            'foo' => array('durable' => true),
+            'foo' => array('name' => 'foo', 'durable' => true),
             'bar' => array('name' => 'doe', 'durable' => true)
         ));
 

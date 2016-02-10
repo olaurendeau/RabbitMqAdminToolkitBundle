@@ -25,7 +25,7 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_create()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'foo' => array('name' => 'foo', 'bindings' => array('foo-bind'), 'modulus' => null),
             'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 
@@ -45,7 +45,7 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_createSharded()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'foo' => array('name' => 'foo', 'bindings' => array('foo-bind'), 'modulus' => null),
             'bar' => array('name' => 'doe.{modulus}', 'bindings' => array(array('routing_key' => 'routing.{modulus}')), 'modulus' => 2)
         ));
 
@@ -68,7 +68,7 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_exist()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('bindings' => array('foo-bind'), 'modulus' => null),
+            'foo' => array('name' => 'foo', 'bindings' => array('foo-bind'), 'modulus' => null),
             'bar' => array('name' => 'doe', 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 
@@ -87,7 +87,7 @@ class QueueManagerTest extends AbstractManagerTest
     public function test_define_update()
     {
         $this->configuration->getConfiguration('queues')->willReturn(array(
-            'foo' => array('durable' => true, 'bindings' => array('foo-bind'), 'modulus' => null),
+            'foo' => array('name' => 'foo', 'durable' => true, 'bindings' => array('foo-bind'), 'modulus' => null),
             'bar' => array('name' => 'doe', 'durable' => true, 'bindings' => array('doe-bind'), 'modulus' => null)
         ));
 

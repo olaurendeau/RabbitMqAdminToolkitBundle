@@ -12,9 +12,9 @@ class ExchangeManager extends AbstractManager
      */
     public function define(VhostConfiguration $configuration)
     {
-        foreach ($configuration->getConfiguration('exchanges') as $name => $exchange) {
+        foreach ($configuration->getConfiguration('exchanges') as $exchange) {
 
-            $name = isset($exchange['name']) ? $exchange['name'] : $name;
+            $name = $exchange['name'];
             unset($exchange['name']);
 
             try {
