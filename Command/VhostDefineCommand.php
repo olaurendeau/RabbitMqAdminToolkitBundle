@@ -30,27 +30,7 @@ class VhostDefineCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $vhost = $input->getArgument('vhost');
-            if (empty($vhost)) {
-                $vhost = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
-            }
-
-            $serviceName = sprintf(
-                OlaRabbitMqAdminToolkitExtension::VHOST_MANAGER_SERVICE_TEMPLATE,
-                $vhost
-            );
-
-            $output->write(sprintf('Looking for service [<info>%s</info>]...', $serviceName));
-
-            if (!$this->getContainer()->has($serviceName)) {
-                throw new \InvalidArgumentException(sprintf(
-                    'No service found for vhost : "%s"',
-                    $vhost
-                ));
-            }
-            $output->writeln(' service found !');
-
-            $vhostConfiguration = $this->getContainer()->get($serviceName);
+            $vhostConfiguration = $this->getVhostConfiguration($input, $output);
             $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
             $creation = !$vhostHandler->exists($vhostConfiguration);
             $output->write(sprintf('%s vhost configuration...', $creation ? 'Creating' : 'Updating'));
@@ -63,5 +43,34 @@ class VhostDefineCommand extends ContainerAwareCommand
                 throw $e;
             }
         }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
+    private function getVhostConfiguration(InputInterface $input, OutputInterface $output)
+    {
+        $vhost = $input->getArgument('vhost');
+        if (empty($vhost)) {
+            $vhost = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
+        }
+
+        $serviceName = sprintf(
+            OlaRabbitMqAdminToolkitExtension::VHOST_MANAGER_SERVICE_TEMPLATE,
+            $vhost
+        );
+
+        $output->write(sprintf('Looking for service [<info>%s</info>]...', $serviceName));
+
+        if (!$this->getContainer()->has($serviceName)) {
+            throw new \InvalidArgumentException(sprintf(
+                'No configuration service found for vhost : "%s"',
+                $vhost
+            ));
+        }
+        $output->writeln(' service found !');
+
+        $this->getContainer()->get($serviceName);
     }
 }
