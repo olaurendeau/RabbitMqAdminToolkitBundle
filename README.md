@@ -125,3 +125,9 @@ ola_rabbit_mq_admin_toolkit:
                         - { exchange: exchange.a, routing_key: "a.{modulus}.#" }
                         - { exchange: exchange.a, routing_key: "b.#" }
 ```
+
+It will produce the following configuration :
+
+<img width="443" alt="capture d ecran 2016-02-10 a 09 56 19" src="https://cloud.githubusercontent.com/assets/1516110/12942626/dbc93816-cfdc-11e5-9ae5-ac1a700a5536.png">
+
+<img width="500" alt="capture d ecran 2016-02-10 a 09 56 33" src="https://cloud.githubusercontent.com/assets/1516110/12942625/dbb8aa96-cfdc-11e5-851e-a6ee7acaee03.png">
