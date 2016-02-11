@@ -25,8 +25,8 @@ class Configuration implements ConfigurationInterface
                 ->scalarNode('delete_allowed')->defaultFalse()->end()
                 ->scalarNode('silent_failure')->defaultFalse()->end()
                 ->arrayNode('connections')
-                    ->prototype('scalar')
-                    ->end()
+                    ->useAttributeAsKey('identifier')
+                    ->prototype('scalar')->end()
                 ->end()
                 ->arrayNode('vhosts')
                     ->useAttributeAsKey('identifier')
@@ -92,32 +92,7 @@ class Configuration implements ConfigurationInterface
      */
     private function getQueuesConfiguration()
     {
-        $modulusValidation = function($queues) {
-
-            $hasModulus = function($string) {
-                return strpos($string, QueueManager::MODULUS_PLACEHOLDER) !== false;
-            };
-
-            foreach ($queues as $name => $queue) {
-                if (isset($queue['modulus']) && is_int($queue['modulus'])) {
-
-                    if (!$hasModulus($queue['name'])) {
-                        return true;
-                    }
-
-                    $bindingsHaveModulus = false;
-                    foreach ($queue['bindings'] as $binding) {
-                        if ($hasModulus($binding['routing_key'])) {
-                            $bindingsHaveModulus = true;
-                        }
-                    }
-
-                    if (!$bindingsHaveModulus) {
-                        return true;
-                    }
-                }
-            }
-        };
+        $modulusValidation = $this->getModulusValidation();
 
         $node = new ArrayNodeDefinition('queues');
 
@@ -149,6 +124,41 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
+     * Get modulus validation closure
+     *
+     * @return \Closure
+     */
+    private function getModulusValidation()
+    {
+        return function($queues) {
+
+            $hasModulus = function($string) {
+                return strpos($string, QueueManager::MODULUS_PLACEHOLDER) !== false;
+            };
+
+            foreach ($queues as $name => $queue) {
+                if (isset($queue['modulus']) && is_int($queue['modulus'])) {
+
+                    if (!$hasModulus($queue['name'])) {
+                        return true;
+                    }
+
+                    $bindingsHaveModulus = false;
+                    foreach ($queue['bindings'] as $binding) {
+                        if ($hasModulus($binding['routing_key'])) {
+                            $bindingsHaveModulus = true;
+                        }
+                    }
+
+                    if (!$bindingsHaveModulus) {
+                        return true;
+                    }
+                }
+            }
+        };
+    }
+
+    /**
      * @param NodeDefinition $node
      *
      * @return NodeDefinition
@@ -166,7 +176,7 @@ class Configuration implements ConfigurationInterface
                 })
                 ->then(function($array) {
                     foreach ($array as $name => $item) {
-                        if (!isset($item['name'])) {
+                        if (false !== $item && !isset($item['name'])) {
                             $array[$name]['name'] = $name;
                         }
                     }
