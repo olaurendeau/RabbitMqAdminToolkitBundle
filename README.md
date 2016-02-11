@@ -85,6 +85,8 @@ ola_rabbit_mq_admin_toolkit:
             queues:
                 queue.a:
                     durable: false # default is "true"
+                    arguments: # define arguments 
+                        x-message-ttl: 5000
                     bindings:
                         - { exchange: exchange.a, routing_key: "a.#" }
                         - { exchange: exchange.b, routing_key: "b.#" }
