@@ -110,6 +110,7 @@ class Configuration implements ConfigurationInterface
                     ->scalarNode('name')->end()
                     ->scalarNode('durable')->defaultTrue()->end()
                     ->scalarNode('modulus')->defaultNull()->end()
+                    ->append($this->getQueueArgumentsConfiguration())
                     ->arrayNode('bindings')
                         ->performNoDeepMerging()
                         ->prototype('array')
@@ -184,5 +185,37 @@ class Configuration implements ConfigurationInterface
                     return $array;
                 })
             ->end();
+    }
+
+    /**
+     * @return NodeDefinition
+     */
+    private function getQueueArgumentsConfiguration()
+    {
+        $node = new ArrayNodeDefinition('arguments');
+
+        return $node
+            // We have to un-normalize arguments keys, as this is not configurable in SF 2.1
+            ->beforeNormalization()
+                ->ifTrue(function($arguments) {
+                    foreach ($arguments as $k => $v) {
+                        //Un-normalize keys
+                        if (false !== strpos($k, '_')) {
+                            return true;
+                        }
+                    }
+                })
+                ->then(function($arguments) {
+                    foreach ($arguments as $k => $v) {
+                        if (false !== strpos($k, '_')) {
+                            $arguments[str_replace('_', '-', $k)] = $v;
+                            unset($arguments[$k]);
+                        }
+                    }
+
+                    return $arguments;
+                })
+            ->end()
+            ->prototype('scalar')->end();
     }
 }
