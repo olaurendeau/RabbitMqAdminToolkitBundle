@@ -29,6 +29,8 @@ class Configuration implements ConfigurationInterface
                     ->end()
                 ->end()
                 ->arrayNode('vhosts')
+                    ->useAttributeAsKey('identifier')
+                    ->canBeUnset(true)
                     ->prototype('array')
                         ->children()
                             ->scalarNode('name')->end()
@@ -53,6 +55,8 @@ class Configuration implements ConfigurationInterface
         $node = new ArrayNodeDefinition('permissions');
 
         return $node
+            ->useAttributeAsKey('identifier')
+            ->canBeUnset(true)
             ->prototype('array')
                 ->children()
                     ->scalarNode('configure')->defaultValue('.*')->end()
@@ -72,6 +76,8 @@ class Configuration implements ConfigurationInterface
         $this->appendNameNormalization($node);
 
         return $node
+            ->useAttributeAsKey('identifier')
+            ->canBeUnset(true)
             ->prototype('array')
                 ->children()
                     ->scalarNode('name')->end()
@@ -118,16 +124,19 @@ class Configuration implements ConfigurationInterface
         $this->appendNameNormalization($node);
 
         return $node
+            ->useAttributeAsKey('identifier')
             ->validate()
                 ->ifTrue($modulusValidation)
                 ->thenInvalid('If queue.modulus is defined queue.name & at least one associated routing_key should contain a {modulus} part')
             ->end()
             ->prototype('array')
+                ->canBeUnset(true)
                 ->children()
                     ->scalarNode('name')->end()
                     ->scalarNode('durable')->defaultTrue()->end()
                     ->scalarNode('modulus')->defaultNull()->end()
                     ->arrayNode('bindings')
+                        ->performNoDeepMerging()
                         ->prototype('array')
                             ->children()
                                 ->scalarNode('exchange')->end()
@@ -146,24 +155,24 @@ class Configuration implements ConfigurationInterface
      */
     private function appendNameNormalization(NodeDefinition $node)
     {
-        return $node->beforeNormalization()
-            ->ifTrue(function($array) {
-                foreach ($array as $item) {
-                    if (!isset($item['name'])) {
-                        return true;
+        return $node
+            ->beforeNormalization()
+                ->ifTrue(function($array) {
+                    foreach ($array as $item) {
+                        if (false !== $item && !isset($item['name'])) {
+                            return true;
+                        }
                     }
-                }
-            })
-            ->then(function($array) {
-                foreach ($array as $name => $item) {
-                    if (!isset($item['name'])) {
-                        $array[$name]['name'] = $name;
+                })
+                ->then(function($array) {
+                    foreach ($array as $name => $item) {
+                        if (!isset($item['name'])) {
+                            $array[$name]['name'] = $name;
+                        }
                     }
-                }
 
-                return $array;
-            })
+                    return $array;
+                })
             ->end();
-
     }
 }
