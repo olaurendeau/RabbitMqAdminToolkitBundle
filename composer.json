@@ -4,9 +4,9 @@
     "type": "symfony-bundle",
     "require": {
         "php": ">=5.3",
-        "symfony/config": "~2.1",
-        "symfony/dependency-injection": "~2.1",
-        "symfony/http-kernel": "~2.1",
+        "symfony/config": ">=2.1",
+        "symfony/dependency-injection": ">=2.1",
+        "symfony/http-kernel": ">=2.1",
         "richardfullmer/rabbitmq-management-api": "^1.0"
     },
     "require-dev": {
