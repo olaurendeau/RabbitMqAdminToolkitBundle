@@ -3,6 +3,7 @@
 namespace Ola\RabbitMqAdminToolkitBundle\Command;
 
 use Ola\RabbitMqAdminToolkitBundle\DependencyInjection\OlaRabbitMqAdminToolkitExtension;
+use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,14 +30,22 @@ class VhostDefineCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
+            $this->comment($input, $output, sprintf(
+                'Define rabbitmq <info>%s</info> vhost configuration',
+                $this->getVhost($input)
+            ));
+
             $vhostConfiguration = $this->getVhostConfiguration($input, $output);
             $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
             $creation = !$vhostHandler->exists($vhostConfiguration);
-            $output->write(sprintf('%s vhost configuration...', $creation ? 'Creating' : 'Updating'));
 
             $vhostHandler->define($vhostConfiguration);
 
-            $output->writeln(sprintf(' %s !', $creation ? 'created' : 'updated'));
+            $this->success($input, $output, sprintf(
+                'Rabbitmq "%s" vhost configuration successfully %s !',
+                $this->getVhost($input),
+                $creation ? 'created' : 'updated'
+            ));
         } catch (\Exception $e) {
             if (!$this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
                 throw $e;
@@ -45,22 +54,38 @@ class VhostDefineCommand extends ContainerAwareCommand
     }
 
     /**
+     * Retrieve vhost's name to process
+     *
      * @param InputInterface $input
-     * @param OutputInterface $output
+     *
+     * @return string
      */
-    private function getVhostConfiguration(InputInterface $input, OutputInterface $output)
+    private function getVhost(InputInterface $input)
     {
         $vhost = $input->getArgument('vhost');
         if (empty($vhost)) {
             $vhost = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
         }
 
+        return $vhost;
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return VhostConfiguration
+     *
+     * @throws \InvalidArgumentException
+     */
+    private function getVhostConfiguration(InputInterface $input, OutputInterface $output)
+    {
+        $vhost = $this->getVhost($input);
+
         $serviceName = sprintf(
             OlaRabbitMqAdminToolkitExtension::VHOST_MANAGER_SERVICE_TEMPLATE,
             $vhost
         );
-
-        $output->write(sprintf('Looking for service [<info>%s</info>]...', $serviceName));
 
         if (!$this->getContainer()->has($serviceName)) {
             throw new \InvalidArgumentException(sprintf(
@@ -68,8 +93,53 @@ class VhostDefineCommand extends ContainerAwareCommand
                 $vhost
             ));
         }
-        $output->writeln(' service found !');
 
         return $this->getContainer()->get($serviceName);
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param $message
+     */
+    private function comment(InputInterface $input, OutputInterface $output, $message)
+    {
+        $io = $this->getIO($input, $output);
+
+        if (null !== $io) {
+            $io->comment($message);
+        } else {
+            $output->writeln(sprintf('<comment>%s</comment>', $message));
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @param $message
+     */
+    private function success(InputInterface $input, OutputInterface $output, $message)
+    {
+        $io = $this->getIO($input, $output);
+
+        if (null !== $io) {
+            $io->success($message);
+        } else {
+            $output->writeln(sprintf('<info>%s</info>', $message));
+        }
+    }
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return null|\Symfony\Component\Console\Style\SymfonyStyle
+     */
+    private function getIO(InputInterface $input, OutputInterface $output)
+    {
+        if(class_exists('Symfony\Component\Console\Style\SymfonyStyle')) {
+            return new \Symfony\Component\Console\Style\SymfonyStyle($input, $output);
+        }
+
+        return null;
     }
 }
