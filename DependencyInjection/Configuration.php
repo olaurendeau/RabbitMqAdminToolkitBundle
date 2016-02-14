@@ -196,6 +196,7 @@ class Configuration implements ConfigurationInterface
 
         return $node
             // We have to un-normalize arguments keys, as this is not configurable in SF 2.1
+            ->useAttributeAsKey('identifier')
             ->beforeNormalization()
                 ->ifTrue(function($arguments) {
                     foreach ($arguments as $k => $v) {

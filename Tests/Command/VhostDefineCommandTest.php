@@ -42,7 +42,7 @@ class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
 
         $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
 
-        $this->commandTester->execute(array());
+        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
     }
 
     public function test_execute_withoutDefaultVhostButSilentFailure()
@@ -50,7 +50,7 @@ class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
         $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
         $this->container->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')->willReturn(true);
 
-        $this->commandTester->execute(array());
+        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
     }
 
     public function test_execute_creationWithDefaultVhost()
@@ -61,7 +61,7 @@ class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
         $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
         $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn($this->configuration->reveal());
 
-        $this->commandTester->execute(array());
+        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
 
         $this->assertContains('created', $this->commandTester->getDisplay());
     }
@@ -87,7 +87,7 @@ class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
         $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
         $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn($this->configuration->reveal());
 
-        $this->commandTester->execute(array());
+        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
 
         $this->assertContains('updated', $this->commandTester->getDisplay());
     }
