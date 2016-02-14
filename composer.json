@@ -22,9 +22,8 @@
     ],
     "minimum-stability": "stable",
     "autoload": {
-        "psr-0": { "Ola\\RabbitMqAdminToolkitBundle": "" }
+        "psr-4": { "Ola\\RabbitMqAdminToolkitBundle\\": "" }
     },
-    "target-dir": "Ola/RabbitMqAdminToolkitBundle",
     "config": {
         "bin-dir": "bin"
     }
