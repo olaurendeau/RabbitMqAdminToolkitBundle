@@ -100,7 +100,7 @@ class VhostDefineCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @param $message
+     * @param string $message
      */
     private function comment(InputInterface $input, OutputInterface $output, $message)
     {
@@ -116,7 +116,7 @@ class VhostDefineCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @param $message
+     * @param string $message
      */
     private function success(InputInterface $input, OutputInterface $output, $message)
     {
@@ -136,7 +136,7 @@ class VhostDefineCommand extends ContainerAwareCommand
      */
     private function getIO(InputInterface $input, OutputInterface $output)
     {
-        if(class_exists('Symfony\Component\Console\Style\SymfonyStyle')) {
+        if (class_exists('Symfony\Component\Console\Style\SymfonyStyle')) {
             return new \Symfony\Component\Console\Style\SymfonyStyle($input, $output);
         }
 
