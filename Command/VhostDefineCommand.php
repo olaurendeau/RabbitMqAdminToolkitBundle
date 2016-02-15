@@ -106,7 +106,7 @@ class VhostDefineCommand extends ContainerAwareCommand
     {
         $io = $this->getIO($input, $output);
 
-        if (null !== $io) {
+        if (null !== $io && method_exists($io, 'comment')) {
             $io->comment($message);
         } else {
             $output->writeln(sprintf('<comment>%s</comment>', $message));
