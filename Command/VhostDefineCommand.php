@@ -35,7 +35,7 @@ class VhostDefineCommand extends ContainerAwareCommand
                 $this->getVhost($input)
             ));
 
-            $vhostConfiguration = $this->getVhostConfiguration($input, $output);
+            $vhostConfiguration = $this->getVhostConfiguration($input);
             $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
             $creation = !$vhostHandler->exists($vhostConfiguration);
 
@@ -78,7 +78,7 @@ class VhostDefineCommand extends ContainerAwareCommand
      *
      * @throws \InvalidArgumentException
      */
-    private function getVhostConfiguration(InputInterface $input, OutputInterface $output)
+    private function getVhostConfiguration(InputInterface $input)
     {
         $vhost = $this->getVhost($input);
 
