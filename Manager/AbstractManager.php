@@ -48,8 +48,9 @@ abstract class AbstractManager
                     $difference[$key] = $value;
                 } else {
                     $new_diff = $this->array_diff_assoc_recursive($value, $array2[$key]);
-                    if (!empty($new_diff))
-                        $difference[$key] = $new_diff;
+                    if (!empty($new_diff)) {
+                                            $difference[$key] = $new_diff;
+                    }
                 }
             } else if (!array_key_exists($key, $array2) || $array2[$key] !== $value) {
                 $difference[$key] = $value;
