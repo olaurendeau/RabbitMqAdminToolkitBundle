@@ -1,7 +1,14 @@
 # RabbitMqAdminToolkitBundle
 
-[![Build Status](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle.svg?branch=master)](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle) [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master) [![Code Coverage](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master)
+[![Build Status](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle.svg?branch=master)](https://travis-ci.org/olaurendeau/RabbitMqAdminToolkitBundle)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/olaurendeau/RabbitMqAdminToolkitBundle/?branch=master)
 [![SensioLabsInsight](https://insight.sensiolabs.com/projects/39f25cf3-5404-4f12-a1c0-0c823814d395/mini.png)](https://insight.sensiolabs.com/projects/39f25cf3-5404-4f12-a1c0-0c823814d395)
+
+[![License](https://poser.pugx.org/olaurendeau/rabbit-mq-admin-toolkit-bundle/license)](https://packagist.org/packages/olaurendeau/rabbit-mq-admin-toolkit-bundle)
+[![Latest Stable Version](https://poser.pugx.org/olaurendeau/rabbit-mq-admin-toolkit-bundle/v/stable)](https://packagist.org/packages/olaurendeau/rabbit-mq-admin-toolkit-bundle)
+[![Total Downloads](https://poser.pugx.org/olaurendeau/rabbit-mq-admin-toolkit-bundle/downloads)](https://packagist.org/packages/olaurendeau/rabbit-mq-admin-toolkit-bundle) 
+[![Monthly Downloads](https://poser.pugx.org/olaurendeau/rabbit-mq-admin-toolkit-bundle/d/monthly)](https://packagist.org/packages/olaurendeau/rabbit-mq-admin-toolkit-bundle)
 
 Automate rabbitmq vhost's configuration creation / update
 
