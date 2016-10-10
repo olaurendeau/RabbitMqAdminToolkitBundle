@@ -19,7 +19,7 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
         $this->load(array(
             'delete_allowed' => true,
             'connections' => array(
-                'default' => 'http://user:password@localhost:15672',
+                'default' => 'http://user:password@localhost',
             ),
             'vhosts' => array(
                 'test' => array(

@@ -50,7 +50,7 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
 
             $definition = new Definition('RabbitMq\ManagementApi\Client', array(
                 null,
-                sprintf("%s://%s:%s", $parsedUri['scheme'], $parsedUri['host'], $parsedUri['port']),
+                sprintf("%s://%s:%s", $parsedUri['scheme'], $parsedUri['host'], isset($parsedUri['port']) ? $parsedUri['port'] : 80),
                 $parsedUri['user'],
                 $parsedUri['pass']
             ));
