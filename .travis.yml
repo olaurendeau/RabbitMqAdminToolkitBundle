@@ -123,7 +123,7 @@ matrix:
 before_script:
   - composer install
 install:
-  - composer require symfony/config:${SYMFONY_VERSION} symfony/dependency-injection:${SYMFONY_VERSION} symfony/http-kernel:${SYMFONY_VERSION} symfony/http-foundation:${SYMFONY_VERSION} symfony/event-dispatcher:${SYMFONY_VERSION} symfony/filesystem:${SYMFONY_VERSION} symfony/framework-bundle:${SYMFONY_VERSION} symfony/console:${SYMFONY_VERSION} symfony/translation:${SYMFONY_VERSION} symfony/routing:${SYMFONY_VERSION} symfony/templating:${SYMFONY_VERSION} symfony/stopwatch:${SYMFONY_VERSION}
+  - composer require symfony/config:${SYMFONY_VERSION} symfony/dependency-injection:${SYMFONY_VERSION} symfony/http-kernel:${SYMFONY_VERSION} symfony/http-foundation:${SYMFONY_VERSION} symfony/event-dispatcher:${SYMFONY_VERSION} symfony/filesystem:${SYMFONY_VERSION} symfony/framework-bundle:${SYMFONY_VERSION} symfony/console:${SYMFONY_VERSION} symfony/translation:${SYMFONY_VERSION} symfony/routing:${SYMFONY_VERSION} symfony/templating:${SYMFONY_VERSION} symfony/stopwatch:${SYMFONY_VERSION} symfony/debug:${SYMFONY_VERSION}
 script: bin/phpunit  --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
