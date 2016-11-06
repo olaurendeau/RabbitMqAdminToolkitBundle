@@ -23,6 +23,19 @@ class BindingManagerTest extends AbstractManagerTest
     public function test_define_create()
     {
         $bindings = array(
+            array('exchange' => 'bar')
+        );
+
+        $this->bindings->get('vhost', 'bar', 'foo', null)->willReturn(array());
+
+        $this->bindings->create('vhost', 'bar', 'foo', null)->shouldBeCalled();
+
+        $this->bindingManager->define($this->configuration->reveal(), 'foo', $bindings);
+    }
+
+    public function test_define_create_with_not_found_exception()
+    {
+        $bindings = array(
             array('exchange' => 'bar', 'routing_key' => 'foo.#')
         );
 
@@ -40,7 +53,7 @@ class BindingManagerTest extends AbstractManagerTest
             array('exchange' => 'bar', 'routing_key' => 'foo.#')
         );
 
-        $this->bindings->get('vhost', 'bar', 'foo', 'foo.#')->willReturn(array());
+        $this->bindings->get('vhost', 'bar', 'foo', 'foo.#')->willReturn(array('binding'));
 
         $this->bindings->create('vhost', 'bar', 'foo', 'foo.#')->shouldNotBeCalled();
 
