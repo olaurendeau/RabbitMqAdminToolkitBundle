@@ -53,7 +53,7 @@ class BindingManagerTest extends AbstractManagerTest
             array('exchange' => 'bar', 'routing_key' => 'foo.#')
         );
 
-        $this->bindings->get('vhost', 'bar', 'foo', 'foo.#')->willReturn(array());
+        $this->bindings->get('vhost', 'bar', 'foo', 'foo.#')->willReturn(array('binding'));
 
         $this->bindings->create('vhost', 'bar', 'foo', 'foo.#')->shouldNotBeCalled();
 
