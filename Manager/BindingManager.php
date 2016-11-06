@@ -17,22 +17,37 @@ class BindingManager extends AbstractManager
         foreach ($bindings as $binding) {
 
             try {
-                $configuration->getClient()->bindings()->get(
+                $bindings = $configuration->getClient()->bindings()->get(
                     $configuration->getName(),
                     $binding['exchange'],
                     $queue,
-                    $binding['routing_key']
+                    isset($binding['routing_key']) ? $binding['routing_key'] : null
                 );
+
+                if (0 === count($bindings)) {
+                    $this->createBinding($configuration, $queue, $binding);
+                }
+
             } catch (ClientErrorResponseException $e) {
                 $this->handleNotFoundException($e);
 
-                $configuration->getClient()->bindings()->create(
-                    $configuration->getName(),
-                    $binding['exchange'],
-                    $queue,
-                    $binding['routing_key']
-                );
+                $this->createBinding($configuration, $queue, $binding);
             }
         }
+    }
+
+    /**
+     * @param VhostConfiguration $configuration
+     * @param $queue
+     * @param array $binding
+     */
+    private function createBinding(VhostConfiguration $configuration, $queue, array $binding)
+    {
+        $configuration->getClient()->bindings()->create(
+            $configuration->getName(),
+            $binding['exchange'],
+            $queue,
+            isset($binding['routing_key']) ? $binding['routing_key'] : null
+        );
     }
 }
