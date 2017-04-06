@@ -66,7 +66,7 @@ class VhostDefineCommand extends ContainerAwareCommand
      */
     private function getVhostList(InputInterface $input)
     {
-        $vhostList = [$input->getArgument('vhost')];
+        $vhostList = array($input->getArgument('vhost'));
         if (empty($input->getArgument('vhost'))) {
             $vhostList = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.vhost_list');
         }
