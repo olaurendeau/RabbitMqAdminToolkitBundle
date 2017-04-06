@@ -29,59 +29,60 @@ class VhostDefineCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $this->comment($input, $output, sprintf(
-                'Define rabbitmq <info>%s</info> vhost configuration',
-                $this->getVhost($input)
-            ));
+        $vhostList = $this->getVhostList($input);
 
-            $vhostConfiguration = $this->getVhostConfiguration($input);
-            $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
-            $creation = !$vhostHandler->exists($vhostConfiguration);
+        foreach ($vhostList as $vhost) {
+            try {
+                $this->comment($input, $output, sprintf(
+                    'Define rabbitmq <info>%s</info> vhost configuration',
+                    $vhost
+                ));
 
-            $vhostHandler->define($vhostConfiguration);
+                $vhostConfiguration = $this->getVhostConfiguration($vhost);
+                $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
+                $creation = !$vhostHandler->exists($vhostConfiguration);
 
-            $this->success($input, $output, sprintf(
-                'Rabbitmq "%s" vhost configuration successfully %s !',
-                $this->getVhost($input),
-                $creation ? 'created' : 'updated'
-            ));
-        } catch (\Exception $e) {
-            if (!$this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
-                throw $e;
+                $vhostHandler->define($vhostConfiguration);
+
+                $this->success($input, $output, sprintf(
+                    'Rabbitmq "%s" vhost configuration successfully %s !',
+                    $vhost,
+                    $creation ? 'created' : 'updated'
+                ));
+            } catch (\Exception $e) {
+                if (!$this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
+                    throw $e;
+                }
             }
         }
     }
 
     /**
-     * Retrieve vhost's name to process
+     * Return Vhosts to process
      *
      * @param InputInterface $input
      *
-     * @return string
+     * @return array
      */
-    private function getVhost(InputInterface $input)
+    private function getVhostList(InputInterface $input)
     {
-        $vhost = $input->getArgument('vhost');
-        if (empty($vhost)) {
-            $vhost = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
+        $vhostList = [$input->getArgument('vhost')];
+        if (empty($input->getArgument('vhost'))) {
+            $vhostList = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.vhost_list');
         }
 
-        return $vhost;
+        return $vhostList;
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param string $vhost
      *
      * @return VhostConfiguration
      *
      * @throws \InvalidArgumentException
      */
-    private function getVhostConfiguration(InputInterface $input)
+    private function getVhostConfiguration($vhost)
     {
-        $vhost = $this->getVhost($input);
-
         $serviceName = sprintf(
             OlaRabbitMqAdminToolkitExtension::VHOST_MANAGER_SERVICE_TEMPLATE,
             $vhost
