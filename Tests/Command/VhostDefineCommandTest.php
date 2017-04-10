@@ -27,7 +27,7 @@ class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
         $this->container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
         $this->container->get('ola_rabbit_mq_admin_toolkit.handler.vhost')->willReturn($this->handler->reveal());
         $this->container->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')->willReturn(false);
-        $this->container->getParameter('ola_rabbit_mq_admin_toolkit.default_vhost')->willReturn('foo');
+        $this->container->getParameter('ola_rabbit_mq_admin_toolkit.vhost_list')->willReturn(array('foo'));
 
         $this->command = new VhostDefineCommand();
         $this->command->setApplication($this->application);

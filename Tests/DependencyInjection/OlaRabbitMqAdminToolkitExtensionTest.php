@@ -84,7 +84,7 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
         ));
         $this->assertContainerBuilderHasService('ola_rabbit_mq_admin_toolkit.connection.default');
         $this->assertContainerBuilderHasService('ola_rabbit_mq_admin_toolkit.configuration.test');
-        $this->assertContainerBuilderHasParameter('ola_rabbit_mq_admin_toolkit.default_vhost');
+        $this->assertContainerBuilderHasParameter('ola_rabbit_mq_admin_toolkit.vhost_list');
     }
 
     public function dataProvider_load_failBecauseModulusIsImproperlyDefined()

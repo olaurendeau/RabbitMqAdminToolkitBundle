@@ -28,7 +28,7 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $container->setParameter(sprintf(self::PARAMETER_TEMPLATE, 'default_vhost'), $config['default_vhost']);
+        $container->setParameter(sprintf(self::PARAMETER_TEMPLATE, 'vhost_list'), array_keys($config['vhosts']));
         $container->setParameter(sprintf(self::PARAMETER_TEMPLATE, 'silent_failure'), $config['silent_failure']);
 
         $this->loadConnections($config['connections'], $container);
