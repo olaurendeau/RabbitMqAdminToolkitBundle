@@ -13,7 +13,9 @@ env:
   - SYMFONY_VERSION="3.4"
 
 before_script:
-  - php -d memory_limit=-1 /home/travis/.phpenv/shims/composer require symfony/framework-bundle:${SYMFONY_VERSION}
+  - echo "memory_limit=-1" >> ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/travis.ini
+  - phpenv config-rm xdebug.ini
+  - composer require symfony/framework-bundle:${SYMFONY_VERSION}
 script: bin/phpunit --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
