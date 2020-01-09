@@ -13,8 +13,9 @@ env:
   - SYMFONY_VERSION="3.4"
 
 before_script:
-  - composer require symfony/framework-bundle:${SYMFONY_VERSION} symfony/console
-  - ./bin/console
+  - composer require symfony/framework-bundle:${SYMFONY_VERSION}
+  - composer require symfony/console
+  - bin/console
 script: bin/phpunit --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
