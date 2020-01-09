@@ -13,8 +13,7 @@ env:
   - SYMFONY_VERSION="3.4"
 
 before_script:
-  - which composer
-  - php -d memory_limit=-1 composer require symfony/framework-bundle:${SYMFONY_VERSION}
+  - php -d memory_limit=-1 /home/travis/.phpenv/shims/composer require symfony/framework-bundle:${SYMFONY_VERSION}
 script: bin/phpunit --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
