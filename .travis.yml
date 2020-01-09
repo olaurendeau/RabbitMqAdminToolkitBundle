@@ -7,14 +7,13 @@ php:
   - '7.4'
 
 env:
-  - SYMFONY_VERSION="2.1" CONSOLE_EXECUTABLE="app/console"
-  - SYMFONY_VERSION="2.8" CONSOLE_EXECUTABLE="app/console"
-  - SYMFONY_VERSION="3.4" CONSOLE_EXECUTABLE="bin/console"
+  - SYMFONY_VERSION="2.1"
+  - SYMFONY_VERSION="2.8"
+  - SYMFONY_VERSION="3.4"
 
 before_script:
   - composer require symfony/framework-bundle:${SYMFONY_VERSION}
-  - composer update
-  - ${CONSOLE_EXECUTABLE}
+  - ./bin/console
 script: bin/phpunit --coverage-clover=coverage.clover Tests
 after_script:
      - wget https://scrutinizer-ci.com/ocular.phar
