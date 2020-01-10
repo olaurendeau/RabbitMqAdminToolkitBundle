@@ -55,6 +55,8 @@ class VhostDefineCommand extends ContainerAwareCommand
                 }
             }
         }
+
+        return 0;
     }
 
     /**

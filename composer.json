@@ -12,7 +12,7 @@
         "symfony/http-kernel": ">=2.1"
     },
     "require-dev": {
-        "matthiasnoback/symfony-dependency-injection-test": "0.*",
+        "matthiasnoback/symfony-dependency-injection-test": "0.7.*",
         "phpunit/phpunit": "~4.8"
     },
     "license": "MIT",
