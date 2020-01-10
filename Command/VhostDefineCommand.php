@@ -4,21 +4,46 @@ namespace Ola\RabbitMqAdminToolkitBundle\Command;
 
 use Ola\RabbitMqAdminToolkitBundle\DependencyInjection\OlaRabbitMqAdminToolkitExtension;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class VhostDefineCommand extends ContainerAwareCommand
+class VhostDefineCommand extends Command
 {
+    protected static $defaultName = 'rabbitmq:vhost:define';
+
+    private ContainerInterface $container;
+
+    private array $vhostList;
+
+    private VhostHandler $vhostHandler;
+
+    private bool $silentFailure;
+
+    public function __construct(
+        ContainerInterface $container,
+        array $vhostList,
+        VhostHandler $vhostHandler,
+        bool $silentFailure
+    ) {
+        parent::__construct();
+
+        $this->container = $container;
+        $this->vhostList = $vhostList;
+        $this->vhostHandler = $vhostHandler;
+        $this->silentFailure = $silentFailure;
+    }
+
     /**
      * {@inheritDoc}
      */
     protected function configure()
     {
-        parent::configure();
         $this
-            ->setName('rabbitmq:vhost:define')
             ->setDescription('Create or update a vhost')
             ->addArgument('vhost', InputArgument::OPTIONAL, 'Which vhost should be configured ?')
         ;
@@ -27,7 +52,7 @@ class VhostDefineCommand extends ContainerAwareCommand
     /**
      * {@inheritDoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $vhostList = $this->getVhostList($input);
 
@@ -39,18 +64,15 @@ class VhostDefineCommand extends ContainerAwareCommand
                 ));
 
                 $vhostConfiguration = $this->getVhostConfiguration($vhost);
-                $vhostHandler = $this->getContainer()->get('ola_rabbit_mq_admin_toolkit.handler.vhost');
-                $creation = !$vhostHandler->exists($vhostConfiguration);
-
-                $vhostHandler->define($vhostConfiguration);
+                $this->vhostHandler->define($vhostConfiguration);
 
                 $this->success($input, $output, sprintf(
                     'Rabbitmq "%s" vhost configuration successfully %s !',
                     $vhost,
-                    $creation ? 'created' : 'updated'
+                    !$this->vhostHandler->exists($vhostConfiguration) ? 'created' : 'updated'
                 ));
             } catch (\Exception $e) {
-                if (!$this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')) {
+                if (!$this->silentFailure) {
                     throw $e;
                 }
             }
@@ -66,15 +88,11 @@ class VhostDefineCommand extends ContainerAwareCommand
      *
      * @return array
      */
-    private function getVhostList(InputInterface $input)
+    private function getVhostList(InputInterface $input): array
     {
         $inputVhost = $input->getArgument('vhost');
-        $vhostList = array($inputVhost);
-        if (empty($inputVhost)) {
-            $vhostList = $this->getContainer()->getParameter('ola_rabbit_mq_admin_toolkit.vhost_list');
-        }
 
-        return $vhostList;
+        return empty($inputVhost) ? $this->vhostList : [$inputVhost];
     }
 
     /**
@@ -84,21 +102,21 @@ class VhostDefineCommand extends ContainerAwareCommand
      *
      * @throws \InvalidArgumentException
      */
-    private function getVhostConfiguration($vhost)
+    private function getVhostConfiguration(string $vhost): VhostConfiguration
     {
         $serviceName = sprintf(
             OlaRabbitMqAdminToolkitExtension::VHOST_MANAGER_SERVICE_TEMPLATE,
             $vhost
         );
 
-        if (!$this->getContainer()->has($serviceName)) {
+        if (!$this->container->has($serviceName)) {
             throw new \InvalidArgumentException(sprintf(
                 'No configuration service found for vhost : "%s"',
                 $vhost
             ));
         }
 
-        return $this->getContainer()->get($serviceName);
+        return $this->container->get($serviceName);
     }
 
     /**
@@ -106,7 +124,7 @@ class VhostDefineCommand extends ContainerAwareCommand
      * @param OutputInterface $output
      * @param string $message
      */
-    private function comment(InputInterface $input, OutputInterface $output, $message)
+    private function comment(InputInterface $input, OutputInterface $output, string $message): void
     {
         $io = $this->getIO($input, $output);
 
@@ -122,7 +140,7 @@ class VhostDefineCommand extends ContainerAwareCommand
      * @param OutputInterface $output
      * @param string $message
      */
-    private function success(InputInterface $input, OutputInterface $output, $message)
+    private function success(InputInterface $input, OutputInterface $output, string $message): void
     {
         $io = $this->getIO($input, $output);
 
@@ -136,12 +154,13 @@ class VhostDefineCommand extends ContainerAwareCommand
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
+     *
      * @return null|\Symfony\Component\Console\Style\SymfonyStyle
      */
-    private function getIO(InputInterface $input, OutputInterface $output)
+    private function getIO(InputInterface $input, OutputInterface $output): ?SymfonyStyle
     {
-        if (class_exists('Symfony\Component\Console\Style\SymfonyStyle')) {
-            return new \Symfony\Component\Console\Style\SymfonyStyle($input, $output);
+        if (class_exists(SymfonyStyle::class)) {
+            return new SymfonyStyle($input, $output);
         }
 
         return null;

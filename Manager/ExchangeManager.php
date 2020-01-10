@@ -2,7 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 
 class ExchangeManager extends AbstractManager
@@ -10,16 +10,15 @@ class ExchangeManager extends AbstractManager
     /**
      * @param VhostConfiguration $configuration
      */
-    public function define(VhostConfiguration $configuration)
+    public function define(VhostConfiguration $configuration): void
     {
         foreach ($configuration->getConfiguration('exchanges') as $exchange) {
-
             $name = $exchange['name'];
             unset($exchange['name']);
 
             try {
                 $remoteExchange = $configuration->getClient()->exchanges()->get($configuration->getName(), $name);
-            } catch (ClientErrorResponseException $e) {
+            } catch (ClientException $e) {
                 $this->handleNotFoundException($e);
 
                 $configuration->getClient()->exchanges()->create($configuration->getName(), $name, $exchange);

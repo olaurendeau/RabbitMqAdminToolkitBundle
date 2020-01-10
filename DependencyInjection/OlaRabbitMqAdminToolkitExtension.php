@@ -2,6 +2,8 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\DependencyInjection;
 
+use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
+use RabbitMq\ManagementApi\Client;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Definition;
@@ -42,18 +44,22 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
      * @param array $connections
      * @param ContainerBuilder $container
      */
-    private function loadConnections(array $connections, ContainerBuilder $container)
+    private function loadConnections(array $connections, ContainerBuilder $container): void
     {
         foreach ($connections as $name => $uri) {
-
             $parsedUri = parse_url($uri);
 
-            $definition = new Definition('RabbitMq\ManagementApi\Client', array(
+            $definition = new Definition(Client::class, [
                 null,
-                sprintf("%s://%s:%s", $parsedUri['scheme'], $parsedUri['host'], isset($parsedUri['port']) ? $parsedUri['port'] : 80),
+                sprintf(
+                    '%s://%s:%s',
+                    $parsedUri['scheme'],
+                    $parsedUri['host'],
+                    $parsedUri['port'] ?? 80
+                ),
                 $parsedUri['user'],
                 $parsedUri['pass']
-            ));
+            ]);
 
             $container->setDefinition(sprintf(self::CONNECTION_SERVICE_TEMPLATE, $name), $definition);
         }
@@ -62,17 +68,17 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
     /**
      * @param array $vhosts
      * @param ContainerBuilder $container
-     * @param $deleteAllowed
+     * @param bool $deleteAllowed
      */
-    private function loadVhostManagers(array $vhosts, ContainerBuilder $container, $deleteAllowed)
+    private function loadVhostManagers(array $vhosts, ContainerBuilder $container, bool $deleteAllowed): void
     {
         foreach ($vhosts as $name => $vhost) {
-            $definition = new Definition('Ola\RabbitMqAdminToolkitBundle\VhostConfiguration', array(
+            $definition = new Definition(VhostConfiguration::class, [
                 new Reference(sprintf(self::CONNECTION_SERVICE_TEMPLATE, $vhost['connection'])),
                 !empty($vhost['name']) ? $vhost['name'] : $name,
                 $vhost,
                 $deleteAllowed
-            ));
+            ]);
             $container->setDefinition(sprintf(self::VHOST_MANAGER_SERVICE_TEMPLATE, $name), $definition);
         }
     }

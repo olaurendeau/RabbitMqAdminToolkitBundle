@@ -1,4 +1,3 @@
-<!-- src/Acme/HelloBundle/Resources/config/services.xml -->
 <container xmlns="http://symfony.com/schema/dic/services"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
@@ -27,5 +26,10 @@
             <argument type="service" id="ola_rabbit_mq_admin_toolkit.manager.binding"/>
         </service>
         <service id="ola_rabbit_mq_admin_toolkit.manager.binding" class="%ola_rabbit_mq_admin_toolkit.manager.binding.class%"/>
+        <service id="Ola\RabbitMqAdminToolkitBundle\Command\VhostDefineCommand">
+            <tag name="console.command" command="rabbitmq:vhost:define"/>
+            <argument key="$vhostList">%ola_rabbit_mq_admin_toolkit.vhost_list%</argument>
+            <argument key="$silentFailure">%ola_rabbit_mq_admin_toolkit.silent_failure%</argument>
+        </service>
     </services>
 </container>

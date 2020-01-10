@@ -2,7 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 
 class PermissionManager extends AbstractManager
@@ -10,12 +10,12 @@ class PermissionManager extends AbstractManager
     /**
      * @param VhostConfiguration $configuration
      */
-    public function define(VhostConfiguration $configuration)
+    public function define(VhostConfiguration $configuration): void
     {
         foreach ($configuration->getConfiguration('permissions') as $user => $permission) {
             try {
                 $remotePermission = $configuration->getClient()->permissions()->get($configuration->getName(), $user);
-            } catch (ClientErrorResponseException $e) {
+            } catch (ClientException $e) {
                 $this->handleNotFoundException($e);
 
                 $configuration->getClient()->permissions()->create($configuration->getName(), $user, $permission);

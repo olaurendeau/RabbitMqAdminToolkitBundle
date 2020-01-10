@@ -2,27 +2,33 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Tests\Manager;
 
-abstract class AbstractManagerTest extends \PHPUnit_Framework_TestCase
+use Http\Client\Exception\HttpException;
+use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use Psr\Http\Message\ResponseInterface;
+use RabbitMq\ManagementApi\Client;
+
+abstract class AbstractManagerTest extends TestCase
 {
-    protected $configuration;
-    protected $client;
+    protected ObjectProphecy $configuration;
+    protected ObjectProphecy $client;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->client = $this->prophesize('RabbitMq\ManagementApi\Client');
+        $this->client = $this->prophesize(Client::class);
+        $this->configuration = $this->prophesize(VhostConfiguration::class);
 
-        $this->configuration = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\VhostConfiguration');
         $this->configuration->getClient()->willReturn($this->client->reveal());
         $this->configuration->getName()->willReturn('vhost');
-
     }
 
-    protected function get404Exception()
+    protected function get404Exception(): ObjectProphecy
     {
-        $response = $this->prophesize('Guzzle\Http\Message\Response');
+        $response = $this->prophesize(ResponseInterface::class);
         $response->getStatusCode()->willReturn(404);
 
-        $exception = $this->prophesize('Guzzle\Http\Exception\ClientErrorResponseException');
+        $exception = $this->prophesize(HttpException::class);
         $exception->getResponse()->willReturn($response->reveal());
 
         return $exception;

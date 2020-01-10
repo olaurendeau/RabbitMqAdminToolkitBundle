@@ -2,7 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 
 class VhostManager extends AbstractManager
@@ -12,11 +12,11 @@ class VhostManager extends AbstractManager
      *
      * @return bool
      */
-    public function exists(VhostConfiguration $configuration)
+    public function exists(VhostConfiguration $configuration): bool
     {
         try {
             $configuration->getClient()->vhosts()->get($configuration->getName());
-        } catch (ClientErrorResponseException $e) {
+        } catch (ClientException $e) {
             $this->handleNotFoundException($e);
 
             return false;
@@ -28,7 +28,7 @@ class VhostManager extends AbstractManager
     /**
      * @param VhostConfiguration $configuration
      */
-    public function define(VhostConfiguration $configuration)
+    public function define(VhostConfiguration $configuration): void
     {
         if (!$this->exists($configuration)) {
             $configuration->getClient()->vhosts()->create($configuration->getName());

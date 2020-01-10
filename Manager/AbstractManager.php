@@ -2,14 +2,14 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 
 abstract class AbstractManager
 {
     /**
-     * @param ClientErrorResponseException $e
+     * @param ClientException $e
      */
-    protected function handleNotFoundException(ClientErrorResponseException $e)
+    protected function handleNotFoundException(ClientException $e): void
     {
         if ($e->getResponse()->getStatusCode() !== 404) {
             throw $e;
@@ -17,12 +17,12 @@ abstract class AbstractManager
     }
 
     /**
-     * @param $configuration
-     * @param $remoteConfiguration
+     * @param array $configuration
+     * @param array $remoteConfiguration
      *
      * @return bool
      */
-    protected function isUpToDate($configuration, $remoteConfiguration)
+    protected function isUpToDate(array $configuration, array $remoteConfiguration): bool
     {
         $diff = $this->arrayDiffAssocRecursive($configuration, $remoteConfiguration);
 
@@ -40,8 +40,16 @@ abstract class AbstractManager
         return empty($diff);
     }
 
-    private function arrayDiffAssocRecursive($array1, $array2) {
-        $difference = array();
+    /**
+     * @param array $array1
+     * @param array $array2
+     *
+     * @return array
+     */
+    private function arrayDiffAssocRecursive(array $array1, array $array2): array
+    {
+        $difference = [];
+
         foreach ($array1 as $key => $value) {
             if (is_array($value)) {
                 if (!isset($array2[$key]) || !is_array($array2[$key])) {
@@ -56,6 +64,7 @@ abstract class AbstractManager
                 $difference[$key] = $value;
             }
         }
+
         return $difference;
     }
 }
