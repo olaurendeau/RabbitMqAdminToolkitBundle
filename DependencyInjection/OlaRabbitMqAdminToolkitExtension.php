@@ -61,6 +61,7 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
                 $parsedUri['pass']
             ]);
 
+            $definition->setPublic(true);
             $container->setDefinition(sprintf(self::CONNECTION_SERVICE_TEMPLATE, $name), $definition);
         }
     }
@@ -79,6 +80,7 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
                 $vhost,
                 $deleteAllowed
             ]);
+            $definition->setPublic(true);
             $container->setDefinition(sprintf(self::VHOST_MANAGER_SERVICE_TEMPLATE, $name), $definition);
         }
     }
