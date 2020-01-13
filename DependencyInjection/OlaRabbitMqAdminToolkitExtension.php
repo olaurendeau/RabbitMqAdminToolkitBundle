@@ -2,6 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\DependencyInjection;
 
+use Ola\RabbitMqAdminToolkitBundle\ClientFactory;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 use RabbitMq\ManagementApi\Client;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -50,17 +51,14 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
             $parsedUri = parse_url($uri);
 
             $definition = new Definition(Client::class, [
-                null,
-                sprintf(
-                    '%s://%s:%s',
-                    $parsedUri['scheme'],
-                    $parsedUri['host'],
-                    $parsedUri['port'] ?? 80
-                ),
+                $parsedUri['scheme'],
+                $parsedUri['host'],
                 $parsedUri['user'],
-                $parsedUri['pass']
+                $parsedUri['pass'],
+                $parsedUri['port'] ?? 80
             ]);
 
+            $definition->setFactory([ClientFactory::class, 'getClient']); // necessary to have the exception handling
             $definition->setPublic(true);
             $container->setDefinition(sprintf(self::CONNECTION_SERVICE_TEMPLATE, $name), $definition);
         }

@@ -10,7 +10,9 @@
         "symfony/console": "^4.4|^5.0",
         "symfony/framework-bundle": "^4.4|^5.0",
         "symfony/dependency-injection": "^4.4|^5.0",
-        "symfony/http-kernel": "^4.4|^5.0"
+        "symfony/http-kernel": "^4.4|^5.0",
+        "nyholm/psr7": "^1.2",
+        "php-http/httplug-bundle": "^1.2"
     },
     "require-dev": {
         "matthiasnoback/symfony-dependency-injection-test": "^4.1",
