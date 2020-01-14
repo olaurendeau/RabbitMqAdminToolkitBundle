@@ -2,27 +2,32 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Tests;
 
+use Ola\RabbitMqAdminToolkitBundle\Manager\ExchangeManager;
+use Ola\RabbitMqAdminToolkitBundle\Manager\PermissionManager;
+use Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager;
+use Ola\RabbitMqAdminToolkitBundle\Manager\VhostManager;
+use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 
-class VhostHandlerTest extends \PHPUnit_Framework_TestCase
+class VhostHandlerTest extends TestCase
 {
-    private $vhostManager;
-    private $permissionManager;
-    private $exchangeManager;
-    private $queueManager;
+    private ObjectProphecy $vhostManager;
+    private ObjectProphecy $permissionManager;
+    private ObjectProphecy $exchangeManager;
+    private ObjectProphecy $queueManager;
+    private ObjectProphecy $configuration;
 
-    private $configuration;
+    private VhostHandler $vhostHandler;
 
-    private $vhostHandler;
-
-    public function setUp()
+    public function setUp(): void
     {
-        $this->vhostManager = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\Manager\VhostManager');
-        $this->permissionManager = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\Manager\PermissionManager');
-        $this->exchangeManager = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\Manager\ExchangeManager');
-        $this->queueManager = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager');
-
-        $this->configuration = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\VhostConfiguration');
+        $this->vhostManager = $this->prophesize(VhostManager::class);
+        $this->permissionManager = $this->prophesize(PermissionManager::class);
+        $this->exchangeManager = $this->prophesize(ExchangeManager::class);
+        $this->queueManager = $this->prophesize(QueueManager::class);
+        $this->configuration = $this->prophesize(VhostConfiguration::class);
 
         $this->vhostHandler = new VhostHandler(
             $this->vhostManager->reveal(),

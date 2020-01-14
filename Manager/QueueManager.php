@@ -2,7 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 
 class QueueManager extends AbstractManager
@@ -12,7 +12,7 @@ class QueueManager extends AbstractManager
     /**
      * @var BindingManager
      */
-    private $bindingManager;
+    private BindingManager $bindingManager;
 
     /**
      * @param BindingManager $bindingManager
@@ -25,7 +25,7 @@ class QueueManager extends AbstractManager
     /**
      * @param VhostConfiguration $configuration
      */
-    public function define(VhostConfiguration $configuration)
+    public function define(VhostConfiguration $configuration): void
     {
         foreach ($configuration->getConfiguration('queues') as $queue) {
 
@@ -63,14 +63,14 @@ class QueueManager extends AbstractManager
 
     /**
      * @param VhostConfiguration $configuration
-     * @param $name
-     * @param $queue
+     * @param string $name
+     * @param array $queue
      */
-    private function createQueue(VhostConfiguration $configuration, $name, $queue)
+    private function createQueue(VhostConfiguration $configuration, string $name, array $queue): void
     {
         try {
             $remoteQueue = $configuration->getClient()->queues()->get($configuration->getName(), $name);
-        } catch (ClientErrorResponseException $e) {
+        } catch (ClientException $e) {
             $this->handleNotFoundException($e);
 
             $configuration->getClient()->queues()->create($configuration->getName(), $name, $queue);
@@ -83,12 +83,12 @@ class QueueManager extends AbstractManager
     }
 
     /**
-     * @param $name
-     * @param $modulus
+     * @param string $name
+     * @param string $modulus
      *
      * @return string
      */
-    private function getModulusName($name, $modulus)
+    private function getModulusName(string $name, string $modulus): string
     {
         return str_replace(self::MODULUS_PLACEHOLDER, $modulus, $name);
     }

@@ -2,6 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\DependencyInjection;
 
+use \Closure as Closure;
 use Ola\RabbitMqAdminToolkitBundle\Manager\QueueManager;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeDefinition;
@@ -13,10 +14,10 @@ class Configuration implements ConfigurationInterface
     /**
      * {@inheritdoc}
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('ola_rabbit_mq_admin_toolkit');
+        $treeBuilder = new TreeBuilder('ola_rabbit_mq_admin_toolkit');
+        $rootNode = $treeBuilder->getRootNode();
 
         $rootNode
             ->addDefaultsIfNotSet()
@@ -44,13 +45,14 @@ class Configuration implements ConfigurationInterface
                 ->end()
             ->end()
         ;
+
         return $treeBuilder;
     }
 
     /**
      * @return NodeDefinition
      */
-    private function getPermissionsConfiguration()
+    private function getPermissionsConfiguration(): NodeDefinition
     {
         $node = new ArrayNodeDefinition('permissions');
 
@@ -69,7 +71,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @return NodeDefinition
      */
-    private function getExchangesConfiguration()
+    private function getExchangesConfiguration(): NodeDefinition
     {
         $node = new ArrayNodeDefinition('exchanges');
 
@@ -90,7 +92,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @return NodeDefinition
      */
-    private function getQueuesConfiguration()
+    private function getQueuesConfiguration(): NodeDefinition
     {
         $modulusValidation = $this->getModulusValidation();
 
@@ -127,12 +129,11 @@ class Configuration implements ConfigurationInterface
     /**
      * Get modulus validation closure
      *
-     * @return \Closure
+     * @return Closure
      */
-    private function getModulusValidation()
+    private function getModulusValidation(): Closure
     {
         return function($queues) {
-
             $hasModulus = function($string) {
                 return strpos($string, QueueManager::MODULUS_PLACEHOLDER) !== false;
             };
@@ -164,7 +165,7 @@ class Configuration implements ConfigurationInterface
      *
      * @return NodeDefinition
      */
-    private function appendNameNormalization(NodeDefinition $node)
+    private function appendNameNormalization(NodeDefinition $node): NodeDefinition
     {
         return $node
             ->beforeNormalization()
@@ -190,7 +191,7 @@ class Configuration implements ConfigurationInterface
     /**
      * @return NodeDefinition
      */
-    private function getQueueArgumentsConfiguration()
+    private function getQueueArgumentsConfiguration(): NodeDefinition
     {
         $node = new ArrayNodeDefinition('arguments');
 

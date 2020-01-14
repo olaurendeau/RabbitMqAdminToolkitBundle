@@ -2,7 +2,7 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Manager;
 
-use Guzzle\Http\Exception\ClientErrorResponseException;
+use Http\Client\Exception\HttpException as ClientException;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 
 class BindingManager extends AbstractManager
@@ -12,10 +12,9 @@ class BindingManager extends AbstractManager
      * @param string $queue
      * @param array $bindings
      */
-    public function define(VhostConfiguration $configuration, $queue, array $bindings)
+    public function define(VhostConfiguration $configuration, string $queue, array $bindings): void
     {
         foreach ($bindings as $binding) {
-
             try {
                 $bindings = $configuration->getClient()->bindings()->get(
                     $configuration->getName(),
@@ -27,8 +26,7 @@ class BindingManager extends AbstractManager
                 if (0 === count($bindings)) {
                     $this->createBinding($configuration, $queue, $binding);
                 }
-
-            } catch (ClientErrorResponseException $e) {
+            } catch (ClientException $e) {
                 $this->handleNotFoundException($e);
 
                 $this->createBinding($configuration, $queue, $binding);
@@ -38,10 +36,10 @@ class BindingManager extends AbstractManager
 
     /**
      * @param VhostConfiguration $configuration
-     * @param $queue
+     * @param string $queue
      * @param array $binding
      */
-    private function createBinding(VhostConfiguration $configuration, $queue, array $binding)
+    private function createBinding(VhostConfiguration $configuration, string $queue, array $binding): void
     {
         $configuration->getClient()->bindings()->create(
             $configuration->getName(),

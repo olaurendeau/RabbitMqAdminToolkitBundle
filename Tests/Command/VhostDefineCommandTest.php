@@ -3,105 +3,117 @@
 namespace Ola\RabbitMqAdminToolkitBundle\Tests\Command;
 
 use Ola\RabbitMqAdminToolkitBundle\Command\VhostDefineCommand;
+use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
+use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class VhostDefineCommandTest extends \PHPUnit_Framework_TestCase
+class VhostDefineCommandTest extends TestCase
 {
-    private $application;
-    private $container;
-    private $command;
-    private $commandTester;
+    private ObjectProphecy $container;
+    private ObjectProphecy $configuration;
+    private ObjectProphecy $handler;
 
-    private $configuration;
-    private $handler;
+    private Application $application;
+    private VhostDefineCommand $command;
+    private CommandTester $commandTester;
 
-    public function setUp()
+    public function setUp(): void
     {
-        $this->configuration = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\VhostConfiguration');
+        $this->configuration = $this->prophesize(VhostConfiguration::class);
+        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->handler = $this->prophesize(VhostHandler::class);
 
-        $this->handler = $this->prophesize('Ola\RabbitMqAdminToolkitBundle\VhostHandler');
+        $this->defineCommand(false);
+    }
 
+    public function test_execute_withoutDefaultVhost(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
+
+        $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
+    }
+
+    public function test_execute_withoutDefaultVhostButSilentFailure(): void
+    {
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
+        $this->defineCommand(true);
+
+        $this->assertEquals(0, $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']));
+    }
+
+    public function test_execute_creationWithDefaultVhost(): void
+    {
+        $this->handler->exists($this->configuration)->willReturn(false);
+        $this->handler->define($this->configuration)->shouldBeCalled();
+
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
+        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')
+            ->willReturn($this->configuration->reveal());
+
+        $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
+
+        $this->assertStringContainsString('created', $this->commandTester->getDisplay());
+    }
+
+    public function test_execute_creationWithSpecificVhost(): void
+    {
+        $this->handler->exists($this->configuration)->willReturn(false);
+        $this->handler->define($this->configuration)->shouldBeCalled();
+
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
+        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')
+            ->willReturn($this->configuration->reveal());
+
+        $this->commandTester->execute(['vhost' => 'bar']);
+
+        $this->assertStringContainsString('created', $this->commandTester->getDisplay());
+    }
+
+    public function test_execute_updateWithDefaultVhost(): void
+    {
+        $this->handler->exists($this->configuration)->willReturn(true);
+        $this->handler->define($this->configuration)->shouldBeCalled();
+
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
+        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')
+            ->willReturn($this->configuration->reveal());
+
+        $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
+
+        $this->assertStringContainsString('updated', $this->commandTester->getDisplay());
+    }
+
+    public function test_execute_updateWithSpecificVhost(): void
+    {
+        $this->handler->exists($this->configuration)->willReturn(true);
+        $this->handler->define($this->configuration)->shouldBeCalled();
+
+        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
+        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')
+            ->willReturn($this->configuration->reveal());
+
+        $this->commandTester->execute(['vhost' => 'bar']);
+
+        $this->assertStringContainsString('updated', $this->commandTester->getDisplay());
+    }
+
+    private function defineCommand(bool $silentFailure): void
+    {
         $this->application = new Application();
-
-        $this->container = $this->prophesize('Symfony\Component\DependencyInjection\ContainerInterface');
-        $this->container->get('ola_rabbit_mq_admin_toolkit.handler.vhost')->willReturn($this->handler->reveal());
-        $this->container->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')->willReturn(false);
-        $this->container->getParameter('ola_rabbit_mq_admin_toolkit.vhost_list')->willReturn(array('foo'));
-
-        $this->command = new VhostDefineCommand();
+        $this->command = new VhostDefineCommand(
+            $this->container->reveal(),
+            ['foo'],
+            $this->handler->reveal(),
+            $silentFailure
+        );
         $this->command->setApplication($this->application);
-        $this->command->setContainer($this->container->reveal());
 
         $this->commandTester = new CommandTester($this->command);
-    }
-
-    public function test_execute_withoutDefaultVhost()
-    {
-        $this->setExpectedException('\InvalidArgumentException');
-
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
-
-        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
-    }
-
-    public function test_execute_withoutDefaultVhostButSilentFailure()
-    {
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
-        $this->container->getParameter('ola_rabbit_mq_admin_toolkit.silent_failure')->willReturn(true);
-
-        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
-    }
-
-    public function test_execute_creationWithDefaultVhost()
-    {
-        $this->handler->exists($this->configuration)->willReturn(false);
-        $this->handler->define($this->configuration)->shouldBeCalled();
-
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn($this->configuration->reveal());
-
-        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
-
-        $this->assertContains('created', $this->commandTester->getDisplay());
-    }
-
-    public function test_execute_creationWithSpecificVhost()
-    {
-        $this->handler->exists($this->configuration)->willReturn(false);
-        $this->handler->define($this->configuration)->shouldBeCalled();
-
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn($this->configuration->reveal());
-
-        $this->commandTester->execute(array('vhost' => 'bar'));
-
-        $this->assertContains('created', $this->commandTester->getDisplay());
-    }
-
-    public function test_execute_updateWithDefaultVhost()
-    {
-        $this->handler->exists($this->configuration)->willReturn(true);
-        $this->handler->define($this->configuration)->shouldBeCalled();
-
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn($this->configuration->reveal());
-
-        $this->commandTester->execute(array('command' => 'rabbitmq:define:vhost'));
-
-        $this->assertContains('updated', $this->commandTester->getDisplay());
-    }
-
-    public function test_execute_updateWithSpecificVhost()
-    {
-        $this->handler->exists($this->configuration)->willReturn(true);
-        $this->handler->define($this->configuration)->shouldBeCalled();
-
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn($this->configuration->reveal());
-
-        $this->commandTester->execute(array('vhost' => 'bar'));
-
-        $this->assertContains('updated', $this->commandTester->getDisplay());
     }
 }

@@ -14,35 +14,26 @@ Automate rabbitmq vhost's configuration creation / update
 
 ## Installation
 
-Add RabbitMqAdminToolkitBundle to your composer.json, then update
-
-```json
-{
-    ...
-    "require": {
-        "olaurendeau/rabbit-mq-admin-toolkit-bundle": "~1.0"
-    },
-    ...
-}
+```bash
+composer require olaurendeau/rabbit-mq-admin-toolkit-bundle
 ```
-Add RabbitMqAdminToolkitBundle to your application kernel
+Add RabbitMqAdminToolkitBundle to your bundles
 
 ```php
-    // app/AppKernel.php
-    public function registerBundles()
-    {
-        return array(
-            // ...
-            new Ola\RabbitMqAdminToolkitBundle\OlaRabbitMqAdminToolkitBundle(),
-            // ...
-        );
-    }
+    // config/bundles.php
+<?php
+
+return [
+    ...
+    Ola\RabbitMqAdminToolkitBundle\OlaRabbitMqAdminToolkitBundle::class => ['all' => true]
+    ...
+];
 ```
 
 Update your configuration
 
 ```yml
-# app/config/config.yml
+# config/packages/ola_rabbit_mq_admin_toolkit.yaml
 ola_rabbit_mq_admin_toolkit:
     delete_allowed: true # Allow deletion of exchange, queues and binding for updating configuration. Shouldn't be enabled in production
     connections:
@@ -70,7 +61,7 @@ Simply run `app/console rabbitmq:vhost:define`.
 See `app/console config:dump-reference OlaRabbitMqAdminToolkitBundle` for full configuration possibilities
 
 ```yml
-# app/config/config.yml
+# config/packages/ola_rabbit_mq_admin_toolkit.yaml
 ola_rabbit_mq_admin_toolkit:
     delete_allowed: true # Allow deletion of exchange, queues and binding for updating configuration. Shouldn't be enabled in production
     default_vhost: test # default is "default"
@@ -112,10 +103,10 @@ ola_rabbit_mq_admin_toolkit:
 
 ## Sharding queues
 
-Sharding queues can be usefull for processing huge amount of messages.
+Sharding queues can be useful to process huge amount of messages.
 
 ```yml
-# app/config/config.yml
+# config/packages/ola_rabbit_mq_admin_toolkit.yaml
 ola_rabbit_mq_admin_toolkit:
     delete_allowed: true # Allow deletion of exchange, queues and binding for updating configuration. Shouldn't be enabled in production
     connections:

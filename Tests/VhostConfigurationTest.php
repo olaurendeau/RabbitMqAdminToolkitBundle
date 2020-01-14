@@ -3,13 +3,16 @@
 namespace Ola\RabbitMqAdminToolkitBundle\Tests;
 
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
+use PHPUnit\Framework\TestCase;
+use Prophecy\Prophecy\ObjectProphecy;
+use RabbitMq\ManagementApi\Client;
 
-class VhostConfigurationTest extends \PHPUnit_Framework_TestCase
+class VhostConfigurationTest extends TestCase
 {
-    private $client;
-    private $configuration;
+    private ObjectProphecy $client;
+    private VhostConfiguration $configuration;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->createConfiguration();
     }
@@ -26,7 +29,7 @@ class VhostConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function test_getConfiguration_all()
     {
-        $this->assertSame(array('foo' => 'bar'), $this->configuration->getConfiguration());
+        $this->assertSame(['foo' => 'bar'], $this->configuration->getConfiguration());
     }
 
     public function test_getConfiguration_singleKey()
@@ -41,13 +44,13 @@ class VhostConfigurationTest extends \PHPUnit_Framework_TestCase
 
     public function test_isDeleteAllowed_vhostOverride()
     {
-        $this->createConfiguration(array('delete_allowed' => true));
+        $this->createConfiguration(['delete_allowed' => true]);
         $this->assertSame(true, $this->configuration->isDeleteAllowed());
     }
 
-    private function createConfiguration($configuration = array('foo' => 'bar'))
+    private function createConfiguration($configuration = ['foo' => 'bar'])
     {
-        $this->client = $this->prophesize('RabbitMq\ManagementApi\Client');
+        $this->client = $this->prophesize(Client::class);
 
         $this->configuration = new VhostConfiguration($this->client->reveal(), 'foo', $configuration, false);
     }
