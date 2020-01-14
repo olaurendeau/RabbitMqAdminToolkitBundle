@@ -5,18 +5,18 @@ namespace Ola\RabbitMqAdminToolkitBundle\Command;
 use Ola\RabbitMqAdminToolkitBundle\DependencyInjection\OlaRabbitMqAdminToolkitExtension;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class VhostDefineCommand extends Command
 {
     protected static $defaultName = 'rabbitmq:vhost:define';
 
-    private ContainerInterface $container;
+    private ContainerInterface $serviceLocator;
 
     private array $vhostList;
 
@@ -25,14 +25,14 @@ class VhostDefineCommand extends Command
     private bool $silentFailure;
 
     public function __construct(
-        ContainerInterface $container,
+        ContainerInterface $serviceLocator,
         array $vhostList,
         VhostHandler $vhostHandler,
         bool $silentFailure
     ) {
         parent::__construct();
 
-        $this->container = $container;
+        $this->serviceLocator = $serviceLocator;
         $this->vhostList = $vhostList;
         $this->vhostHandler = $vhostHandler;
         $this->silentFailure = $silentFailure;
@@ -109,14 +109,14 @@ class VhostDefineCommand extends Command
             $vhost
         );
 
-        if (!$this->container->has($serviceName)) {
+        if (!$this->serviceLocator->has($serviceName)) {
             throw new \InvalidArgumentException(sprintf(
                 'No configuration service found for vhost : "%s"',
                 $vhost
             ));
         }
 
-        return $this->container->get($serviceName);
+        return $this->serviceLocator->get($serviceName);
     }
 
     /**

@@ -79,6 +79,7 @@ class OlaRabbitMqAdminToolkitExtension extends Extension
                 $deleteAllowed
             ]);
             $definition->setPublic(true);
+            $definition->addTag('ola_rabbit_mq_admin_toolkit.vhost_configuration');
             $container->setDefinition(sprintf(self::VHOST_MANAGER_SERVICE_TEMPLATE, $name), $definition);
         }
     }

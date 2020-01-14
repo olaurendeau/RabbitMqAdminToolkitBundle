@@ -18,8 +18,8 @@
         </service>
         <service id="Ola\RabbitMqAdminToolkitBundle\Manager\BindingManager" />
         <service id="Ola\RabbitMqAdminToolkitBundle\Command\VhostDefineCommand">
-            <tag name="console.command" command="rabbitmq:vhost:define" />
-            <argument type="service" id="Symfony\Component\DependencyInjection\ContainerInterface" />
+            <tag name="console.command" />
+            <argument type="tagged_locator" tag="ola_rabbit_mq_admin_toolkit.vhost_configuration" />
             <argument>%ola_rabbit_mq_admin_toolkit.vhost_list%</argument>
             <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\VhostHandler" />
             <argument>%ola_rabbit_mq_admin_toolkit.silent_failure%</argument>
