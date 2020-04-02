@@ -4,16 +4,16 @@ namespace Ola\RabbitMqAdminToolkitBundle\Tests\Command;
 
 use Ola\RabbitMqAdminToolkitBundle\Command\VhostDefineCommand;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
+use Ola\RabbitMqAdminToolkitBundle\VhostConfigurationFactory;
 use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class VhostDefineCommandTest extends TestCase
 {
-    private ObjectProphecy $container;
+    private ObjectProphecy $vhostConfigurationFactory;
     private ObjectProphecy $configuration;
     private ObjectProphecy $handler;
 
@@ -24,7 +24,7 @@ class VhostDefineCommandTest extends TestCase
     public function setUp(): void
     {
         $this->configuration = $this->prophesize(VhostConfiguration::class);
-        $this->container = $this->prophesize(ContainerInterface::class);
+        $this->vhostConfigurationFactory = $this->prophesize(VhostConfigurationFactory::class);
         $this->handler = $this->prophesize(VhostHandler::class);
 
         $this->defineCommand(false);
@@ -32,16 +32,16 @@ class VhostDefineCommandTest extends TestCase
 
     public function test_execute_withoutDefaultVhost(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(\Exception::class);
 
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
+        $this->vhostConfigurationFactory->getVhostConfiguration('foo')->willThrow(\Exception::class);
 
         $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
     }
 
     public function test_execute_withoutDefaultVhostButSilentFailure(): void
     {
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(false);
+        $this->vhostConfigurationFactory->getVhostConfiguration('foo')->willThrow(\Exception::class);
         $this->defineCommand(true);
 
         $this->assertEquals(0, $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']));
@@ -52,9 +52,7 @@ class VhostDefineCommandTest extends TestCase
         $this->handler->exists($this->configuration)->willReturn(false);
         $this->handler->define($this->configuration)->shouldBeCalled();
 
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')
-            ->willReturn($this->configuration->reveal());
+        $this->vhostConfigurationFactory->getVhostConfiguration('foo')->willReturn($this->configuration->reveal());
 
         $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
 
@@ -66,9 +64,7 @@ class VhostDefineCommandTest extends TestCase
         $this->handler->exists($this->configuration)->willReturn(false);
         $this->handler->define($this->configuration)->shouldBeCalled();
 
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')
-            ->willReturn($this->configuration->reveal());
+        $this->vhostConfigurationFactory->getVhostConfiguration('bar')->willReturn($this->configuration->reveal());
 
         $this->commandTester->execute(['vhost' => 'bar']);
 
@@ -80,9 +76,7 @@ class VhostDefineCommandTest extends TestCase
         $this->handler->exists($this->configuration)->willReturn(true);
         $this->handler->define($this->configuration)->shouldBeCalled();
 
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.foo')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.foo')
-            ->willReturn($this->configuration->reveal());
+        $this->vhostConfigurationFactory->getVhostConfiguration('foo')->willReturn($this->configuration->reveal());
 
         $this->commandTester->execute(['command' => 'rabbitmq:define:vhost']);
 
@@ -94,9 +88,7 @@ class VhostDefineCommandTest extends TestCase
         $this->handler->exists($this->configuration)->willReturn(true);
         $this->handler->define($this->configuration)->shouldBeCalled();
 
-        $this->container->has('ola_rabbit_mq_admin_toolkit.configuration.bar')->willReturn(true);
-        $this->container->get('ola_rabbit_mq_admin_toolkit.configuration.bar')
-            ->willReturn($this->configuration->reveal());
+        $this->vhostConfigurationFactory->getVhostConfiguration('bar')->willReturn($this->configuration->reveal());
 
         $this->commandTester->execute(['vhost' => 'bar']);
 
@@ -107,7 +99,7 @@ class VhostDefineCommandTest extends TestCase
     {
         $this->application = new Application();
         $this->command = new VhostDefineCommand(
-            $this->container->reveal(),
+            $this->vhostConfigurationFactory->reveal(),
             ['foo'],
             $this->handler->reveal(),
             $silentFailure

@@ -15,8 +15,6 @@ use Symfony\Component\DependencyInjection\Loader;
 class OlaRabbitMqAdminToolkitExtension extends Extension
 {
     const PARAMETER_TEMPLATE = 'ola_rabbit_mq_admin_toolkit.%s';
-    const CONNECTION_SERVICE_TEMPLATE = 'ola_rabbit_mq_admin_toolkit.connection.%s';
-    const VHOST_MANAGER_SERVICE_TEMPLATE = 'ola_rabbit_mq_admin_toolkit.configuration.%s';
 
     /**
      * {@inheritdoc}

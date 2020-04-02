@@ -2,11 +2,9 @@
 
 namespace Ola\RabbitMqAdminToolkitBundle\Command;
 
-use Ola\RabbitMqAdminToolkitBundle\DependencyInjection\OlaRabbitMqAdminToolkitExtension;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfiguration;
 use Ola\RabbitMqAdminToolkitBundle\VhostConfigurationFactory;
 use Ola\RabbitMqAdminToolkitBundle\VhostHandler;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
