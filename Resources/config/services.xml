@@ -3,6 +3,13 @@
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <services>
+        <service id="Ola\RabbitMqAdminToolkitBundle\ClientFactory" />
+        <service id="Ola\RabbitMqAdminToolkitBundle\VhostConfigurationFactory">
+            <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\ClientFactory" />
+            <argument>%ola_rabbit_mq_admin_toolkit.delete_allowed%</argument>
+            <argument>%ola_rabbit_mq_admin_toolkit.connections%</argument>
+            <argument>%ola_rabbit_mq_admin_toolkit.vhosts%</argument>
+        </service>
         <service id="Ola\RabbitMqAdminToolkitBundle\VhostHandler">
             <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\Manager\VhostManager"/>
             <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\Manager\PermissionManager"/>
@@ -19,7 +26,7 @@
         <service id="Ola\RabbitMqAdminToolkitBundle\Manager\BindingManager" />
         <service id="Ola\RabbitMqAdminToolkitBundle\Command\VhostDefineCommand">
             <tag name="console.command" />
-            <argument type="tagged_locator" tag="ola_rabbit_mq_admin_toolkit.vhost_configuration" />
+            <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\VhostConfigurationFactory" />
             <argument>%ola_rabbit_mq_admin_toolkit.vhost_list%</argument>
             <argument type="service" id="Ola\RabbitMqAdminToolkitBundle\VhostHandler" />
             <argument>%ola_rabbit_mq_admin_toolkit.silent_failure%</argument>
