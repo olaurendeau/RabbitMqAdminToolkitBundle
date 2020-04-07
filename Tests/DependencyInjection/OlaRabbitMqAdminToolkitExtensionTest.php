@@ -87,7 +87,6 @@ class OlaRabbitMqAdminToolkitExtensionTest extends AbstractExtensionTestCase
             'vhosts' => $vhosts,
         ]);
 
-        // todo assert new parameters are created
         $this->assertContainerBuilderHasParameter('ola_rabbit_mq_admin_toolkit.vhost_list');
         $this->assertContainerBuilderHasParameter('ola_rabbit_mq_admin_toolkit.vhosts');
         $this->assertContainerBuilderHasParameter('ola_rabbit_mq_admin_toolkit.connections');
