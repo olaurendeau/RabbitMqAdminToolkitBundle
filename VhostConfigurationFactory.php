@@ -31,6 +31,8 @@ class VhostConfigurationFactory
 
     public function getVhostConfiguration(string $vhostName): VhostConfiguration
     {
+        return 'poo';
+        
         $vhostConfiguration = $this->vhosts[$vhostName] ?? null;
 
         if (null === $vhostConfiguration) {
