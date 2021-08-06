@@ -3,7 +3,7 @@
     "description": "Automate rabbitmq vhost's configuration creation / update",
     "type": "symfony-bundle",
     "require": {
-        "php": "^7.4",
+        "php": "^7.4|^8.0",
         "symfony/http-client": "^4.4|^5.0",
         "richardfullmer/rabbitmq-management-api": "^2.0",
         "symfony/config": "^4.4|^5.0",
